@@ -13,5 +13,5 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-require __DIR__.'/settings.php';
+require __DIR__ . '/pharmacy.php';
+require __DIR__ . '/settings.php';
