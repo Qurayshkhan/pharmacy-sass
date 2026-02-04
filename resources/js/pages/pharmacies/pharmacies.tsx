@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout'
-import React from 'react'
 
-const index = () => {
+
+const Pharmacies = () => {
   return (
     <AppLayout>
         <div>index</div>
@@ -9,4 +9,4 @@ const index = () => {
   )
 }
 
-export default index;
+export default Pharmacies;

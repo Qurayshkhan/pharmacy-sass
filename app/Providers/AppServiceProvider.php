@@ -2,11 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Pharmacy;
+use App\Models\User;
+use App\Observers\PharmacyObserver;
+use App\Observers\UserObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Phar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        User::observe(UserObserver::class);
+        Pharmacy::observe(PharmacyObserver::class);
     }
 
     protected function configureDefaults(): void

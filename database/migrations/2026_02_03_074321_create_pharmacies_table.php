@@ -17,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('pharmacies', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique()->default(Str::uuid());
+            $table->uuid('uuid')->unique()->nullable();
             $table->foreignIdFor(User::class)->constrained('users')->cascadeOnDelete();
             $table->string('logo')->nullable()->default('/assets/images/pharmacy/default.png');
             $table->string('license_number')->nullable()->index('idx_license_number');
