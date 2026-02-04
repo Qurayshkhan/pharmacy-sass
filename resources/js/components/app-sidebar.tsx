@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Store } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -13,9 +13,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as pharmaciesIndex } from '@/routes/pharmacies';
 import type { NavItem } from '@/types';
 import AppLogo from './app-logo';
-// import route from '@/wayfinder/';
 
 const mainNavItems: NavItem[] = [
     {
@@ -23,11 +23,11 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    // {
-    //     title: 'Pharmacies',
-    //     href: route('pharmacies.index'),
-    //     icon: LayoutGrid,
-    // },
+    {
+        title: 'Pharmacies',
+        href: pharmaciesIndex(),
+        icon: Store,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
