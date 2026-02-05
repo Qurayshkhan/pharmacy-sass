@@ -12,10 +12,12 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
+    use HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     const TYPE_ADMIN = 1;
+
     const TYPE_PHARMACY = 2;
+
     const TYPE_STAFF_MEMBER = 3;
 
     protected $guard_name = 'web';
@@ -56,5 +58,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function pharmacy()
+    {
+        return $this->hasOne(Pharmacy::class, 'user_id', 'id');
     }
 }

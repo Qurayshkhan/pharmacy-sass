@@ -8,7 +8,7 @@
         Click the button below to accept your invitation.
     </p>
 
-    <a href="{{ url('/register') }}" class="btn">
+    <a href="{{ $inviteUrl }}" class="btn">
         Accept Invitation
     </a>
 

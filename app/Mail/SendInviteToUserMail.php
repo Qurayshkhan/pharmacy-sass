@@ -13,12 +13,15 @@ use Illuminate\Queue\SerializesModels;
 class SendInviteToUserMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
     protected User $user;
+
     /**
      * Create a new message instance.
      */
     public function __construct(User $user)
     {
+
         $this->user = $user;
     }
 
@@ -41,7 +44,7 @@ class SendInviteToUserMail extends Mailable implements ShouldQueue
             markdown: 'emails.sendInviteToUserMail',
             with: [
                 'user' => $this->user,
-                'inviteUrl' => env('APP_URL') . '/register',
+                'inviteUrl' => route('pharmacies.edit', ['uuid' => $this->user->uuid]),
             ],
         );
     }
