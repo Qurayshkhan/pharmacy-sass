@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('logo')->nullable()->default('/assets/images/pharmacy/default.png');
             $table->string('license_number')->nullable()->index('idx_license_number');
             $table->string('branch')->nullable()->index('idx_branch');
-            $table->string('name')->index('idx_name')->nullable();
             $table->longText('address')->nullable();
             $table->string('contact')->nullable();
             $table->boolean('is_registered')->default(false);
