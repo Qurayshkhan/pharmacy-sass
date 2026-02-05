@@ -29,6 +29,7 @@ class UpdatePharmacyRequest extends FormRequest
             'address' => 'required|string|max:255',
             'contact' => 'required|string',
             'branch' => 'nullable',
+            'uuid' => 'nullable',
         ];
     }
 }

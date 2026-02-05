@@ -4,9 +4,15 @@ namespace App\Repositories;
 
 use App\Interface\PharmacyInterface;
 use App\Models\Pharmacy;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PharmacyRepository implements PharmacyInterface
 {
+    public function getPharmacies(): LengthAwarePaginator
+    {
+        return Pharmacy::select('license_number', 'contact', 'user_id')->with('user:id,name,email,status')->paginate(25);
+    }
+
     public function create(array $data): Pharmacy
     {
         return Pharmacy::create($data);
@@ -24,6 +30,7 @@ class PharmacyRepository implements PharmacyInterface
 
     public function updatePharmacy(array $data): bool
     {
+
         return Pharmacy::where('uuid', $data['uuid'])->update($data);
     }
 }

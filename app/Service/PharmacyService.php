@@ -19,6 +19,10 @@ class PharmacyService
         return $this->pharmacyRepository->create($data);
     }
 
+    public function getPharmacies(){
+        return $this->pharmacyRepository->getPharmacies();
+    }
+
     public function getPharmacyByUserId(int $userId): ?Pharmacy
     {
         return $this->pharmacyRepository->getPharmacyByUserId($userId);
@@ -29,13 +33,15 @@ class PharmacyService
         return $this->pharmacyRepository->getPharmacyByUuid($uuid);
     }
 
-    public function updatePharmacy(array $data): bool
+    public function updatePharmacy($pharmacy,array $data): bool
     {
         $data = [
             'license_number' => $data['license_number'],
             'branch' => $data['branch'],
             'address' => $data['address'],
             'contact' => $data['contact'],
+            'is_registered' => true,
+            'uuid' => $pharmacy->uuid,
         ];
 
         return $this->pharmacyRepository->updatePharmacy($data);

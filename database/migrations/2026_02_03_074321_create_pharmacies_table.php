@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('name')->index('idx_name')->nullable();
             $table->longText('address')->nullable();
             $table->string('contact')->nullable();
-            $table->longText('invite_link')->nullable();
-            $table->dateTime('link_expires_at')->nullable()->default(Carbon::now()->addDays(3));
+            $table->boolean('is_registered')->default(false);
+            $table->dateTime('link_expires_at')->nullable();
             $table->timestamps();
         });
     }

@@ -44,6 +44,13 @@ class UserService
             $data['password'] = Hash::make($data['password']);
         }
 
+        $data = [
+            'name' => $data['name'] ?? null,
+            'email' => $data['email'] ?? null,
+            'password' => $data['password'] ?? null,
+            'uuid' => $data['uuid'] ?? null,
+        ];
+
         return $this->userRepository->updateUser($data);
     }
 }

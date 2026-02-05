@@ -14,6 +14,7 @@ class PharmacyObserver
     public function created(Pharmacy $pharmacy): void
     {
         $pharmacy->uuid =  Str::uuid();
+        $pharmacy->link_expires_at = Carbon::now()->addDays(3);
         $pharmacy->save();
     }
 
