@@ -3,11 +3,14 @@ export interface Pharmacy {
     id: number;
     contact: string | null;
     license_number: string | null;
+    branch?: string | null;
     user_id: number | null;
+    address: string | null;
     user?: {
-        name: string | null;
-        email: string | null;
-        status: number | null;
+        uuid: string | null;
+        name: string | null | '';
+        email: string | null | '';
+        status: number | null | '';
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pharmacy;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminUpdatePharmacyRequest;
 use App\Http\Requests\PharmacyStoreRequest;
 use App\Http\Requests\UpdatePharmacyRequest;
 use App\Service\PharmacyService;
@@ -66,7 +67,6 @@ class PharmacyController extends Controller
 
     public function update(UpdatePharmacyRequest $request)
     {
-
         try {
 
             DB::beginTransaction();
@@ -83,10 +83,15 @@ class PharmacyController extends Controller
             $this->pharmacyService->updatePharmacy($pharmacy, $request->validated());
             $this->userService->updateUser($request->validated());
             DB::commit();
+            if($request->is_update_pharmacy){
+                return Redirect::route('pharmacies.index')->with('success', 'Pharmacy updated successfully.');
+            }
             return Redirect::route('login')->with('success', 'Pharmacy updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
            return Redirect::back()->with('error', 'Failed to update pharmacy.');
         }
     }
+
+
 }

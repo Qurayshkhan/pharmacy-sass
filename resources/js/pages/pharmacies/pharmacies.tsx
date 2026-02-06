@@ -1,5 +1,6 @@
-import { Deferred, Form } from '@inertiajs/react';
+import { Deferred, Form, Head } from '@inertiajs/react';
 import { MoreHorizontalIcon, Plus } from "lucide-react"
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import Label from '@/components/label';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +41,10 @@ interface PharmacyProps {
 
 const Pharmacies = ({ pharmacies }: PharmacyProps) => {
 
+    const [pharmacy, setPharmacy] = useState<Pharmacy | null>(null);
+    const [open, setOpen] = useState(false);
+
+
     if (!pharmacies) {
         return (
             <AppLayout>
@@ -52,6 +57,7 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
 
     return (
         <AppLayout>
+            <Head title='Pharmacies' />
             <Deferred data={['pharmacies']} fallback={<FullPageSpinner />}>
                 <div className="space-y-6 p-6">
                     <div className="flex items-center justify-between">
@@ -146,185 +152,12 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                                                                 </Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem>
-                                                                    <Dialog>
-                                                                        <DialogTrigger asChild>
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                className='size-8'
-
-                                                                            >
-                                                                                Edit
-                                                                            </Button>
-                                                                        </DialogTrigger>
-                                                                        <DialogContent>
-                                                                            <DialogTitle>Edit Pharmacy</DialogTitle>
-                                                                            <Form  {...update.form()} method='put'>
-                                                                                {({ processing, resetAndClearErrors, errors }) => (
-                                                                                    <>
-                                                                                        <input type="hidden" name='uuid' value={String(pharmacy.uuid)} />
-                                                                                        <div className="grid gap-6">
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="name" required>Pharmacy
-                                                                                                    name</Label>
-                                                                                                <Input
-                                                                                                    id="name"
-                                                                                                    type="text"
-                                                                                                    required
-                                                                                                    autoFocus
-                                                                                                    tabIndex={1}
-                                                                                                    autoComplete="name"
-                                                                                                    name="name"
-                                                                                                    placeholder="Full name"
-                                                                                                />
-                                                                                                <InputError
-                                                                                                    message={errors.name}
-                                                                                                    className="mt-2"
-                                                                                                />
-                                                                                            </div>
-
-
-
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="license_number" required>License number</Label>
-                                                                                                <Input
-                                                                                                    id="license_number"
-                                                                                                    type="text"
-                                                                                                    required
-                                                                                                    autoFocus
-                                                                                                    tabIndex={1}
-                                                                                                    autoComplete="name"
-                                                                                                    name="license_number"
-                                                                                                    placeholder="License number"
-                                                                                                />
-                                                                                                <InputError
-                                                                                                    message={errors.license_number}
-                                                                                                    className="mt-2"
-                                                                                                />
-                                                                                            </div>
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="contact" required>Contact</Label>
-                                                                                                <Input
-                                                                                                    id="contact"
-                                                                                                    type="text"
-                                                                                                    required
-                                                                                                    autoFocus
-                                                                                                    tabIndex={1}
-                                                                                                    autoComplete="name"
-                                                                                                    name="contact"
-                                                                                                    placeholder="Contact number"
-                                                                                                />
-                                                                                                <InputError
-                                                                                                    message={errors.contact}
-                                                                                                    className="mt-2"
-                                                                                                />
-                                                                                            </div>
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="branch">Branch Name (optional)</Label>
-                                                                                                <Input
-                                                                                                    id="branch"
-                                                                                                    type="text"
-                                                                                                    autoFocus
-                                                                                                    tabIndex={1}
-                                                                                                    autoComplete="name"
-                                                                                                    name="branch"
-                                                                                                    placeholder="Branch name"
-                                                                                                />
-                                                                                                <InputError
-                                                                                                    message={errors.branch}
-                                                                                                    className="mt-2"
-                                                                                                />
-                                                                                            </div>
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="address" required>Address</Label>
-                                                                                                <Input
-                                                                                                    id="address"
-                                                                                                    type="text"
-                                                                                                    required
-                                                                                                    autoFocus
-                                                                                                    tabIndex={1}
-                                                                                                    autoComplete="name"
-                                                                                                    name="address"
-                                                                                                    placeholder="Address"
-                                                                                                />
-                                                                                                <InputError
-                                                                                                    message={errors.address}
-                                                                                                    className="mt-2"
-                                                                                                />
-                                                                                            </div>
-
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="password" required>Password</Label>
-                                                                                                <Input
-                                                                                                    id="password"
-                                                                                                    type="password"
-                                                                                                    required
-                                                                                                    tabIndex={3}
-                                                                                                    autoComplete="new-password"
-                                                                                                    name="password"
-                                                                                                    placeholder="Password"
-                                                                                                />
-                                                                                                <InputError message={errors.password} />
-                                                                                            </div>
-
-                                                                                            <div className="grid gap-2">
-                                                                                                <Label htmlFor="password_confirmation" required>
-                                                                                                    Confirm password
-                                                                                                </Label>
-                                                                                                <Input
-                                                                                                    id="password_confirmation"
-                                                                                                    type="password"
-                                                                                                    required
-                                                                                                    tabIndex={4}
-                                                                                                    autoComplete="new-password"
-                                                                                                    name="password_confirmation"
-                                                                                                    placeholder="Confirm password"
-                                                                                                />
-                                                                                                <InputError
-                                                                                                    message={errors.password_confirmation}
-                                                                                                />
-                                                                                            </div>
-
-                                                                                            <Button
-                                                                                                type="submit"
-                                                                                                className="mt-2 w-full"
-                                                                                                tabIndex={5}
-                                                                                                data-test="register-user-button"
-                                                                                            >
-                                                                                                {processing && <Spinner />}
-                                                                                                Register pharmacy
-                                                                                            </Button>
-                                                                                        </div>
-                                                                                        <DialogFooter className="gap-2">
-                                                                                            <DialogClose asChild>
-                                                                                                <Button
-                                                                                                    variant="secondary"
-                                                                                                    onClick={() =>
-                                                                                                        resetAndClearErrors()
-                                                                                                    }
-                                                                                                >
-                                                                                                    Cancel
-                                                                                                </Button>
-                                                                                            </DialogClose>
-
-                                                                                            <Button
-                                                                                                variant="destructive"
-                                                                                                disabled={processing}
-                                                                                                asChild
-                                                                                            >
-                                                                                                <button
-                                                                                                    type="submit"
-                                                                                                    data-test="confirm-delete-user-button"
-                                                                                                >
-                                                                                                    Delete account
-                                                                                                </button>
-                                                                                            </Button>
-                                                                                        </DialogFooter>
-                                                                                    </>
-                                                                                )}
-                                                                            </Form>
-                                                                        </DialogContent>
-                                                                    </Dialog>
+                                                                <DropdownMenuItem onSelect={() => {
+                                                                    setPharmacy(pharmacy);
+                                                                    setOpen(true)
+                                                                }
+                                                                }>
+                                                                    Edit
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuItem>Duplicate</DropdownMenuItem>
                                                                 <DropdownMenuSeparator />
@@ -356,8 +189,151 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                     </Card>
                 </div>
             </Deferred>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit Pharmacy</DialogTitle>
+                    </DialogHeader>
+                    <Form
+                        {...update.form()}
+                        onSuccess={() => {
+                            setOpen(false);
+                            setPharmacy(null);
+                        }}
+                        options={{
+                            preserveScroll: true,
+                        }}
+                    >
 
-        </AppLayout>
+                        {({ processing, resetAndClearErrors, errors }) => (
+                            <>
+                                <input type="hidden" name='uuid' value={String(pharmacy?.user?.uuid)} />
+                                <input type="hidden" name='is_update_pharmacy' defaultValue={String(true)} />
+                                <div className="grid gap-6">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="name" required>Pharmacy
+                                            name</Label>
+                                        <Input
+                                            id="name"
+                                            type="text"
+                                            required
+                                            autoFocus
+                                            tabIndex={1}
+                                            autoComplete="name"
+                                            name="name"
+                                            placeholder="Full name"
+                                            defaultValue={String(pharmacy?.user?.name)}
+                                        />
+                                        <InputError
+                                            message={errors.name}
+                                            className="mt-2"
+                                        />
+                                    </div>
+
+
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="license_number" required>License number</Label>
+                                        <Input
+                                            id="license_number"
+                                            type="text"
+                                            required
+                                            autoFocus
+                                            tabIndex={1}
+                                            autoComplete="name"
+                                            name="license_number"
+                                            placeholder="License number"
+                                            defaultValue={String(pharmacy?.license_number)}
+                                        />
+                                        <InputError
+                                            message={errors.license_number}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="contact" required>Contact</Label>
+                                        <Input
+                                            id="contact"
+                                            type="text"
+                                            required
+                                            autoFocus
+                                            tabIndex={1}
+                                            autoComplete="name"
+                                            name="contact"
+                                            placeholder="Contact number"
+                                            defaultValue={String(pharmacy?.contact)}
+                                        />
+                                        <InputError
+                                            message={errors.contact}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="branch">Branch Name (optional)</Label>
+                                        <Input
+                                            id="branch"
+                                            type="text"
+                                            autoFocus
+                                            tabIndex={1}
+                                            autoComplete="name"
+                                            name="branch"
+                                            placeholder="Branch name"
+                                            defaultValue={String(pharmacy?.branch)}
+                                        />
+                                        <InputError
+                                            message={errors.branch}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="address" required>Address</Label>
+                                        <Input
+                                            id="address"
+                                            type="text"
+                                            required
+                                            autoFocus
+                                            tabIndex={1}
+                                            autoComplete="name"
+                                            name="address"
+                                            placeholder="Address"
+                                            defaultValue={String(pharmacy?.address)}
+                                        />
+                                        <InputError
+                                            message={errors.address}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter className="gap-2 py-2">
+                                    <DialogClose asChild>
+                                        <Button
+                                            variant="secondary"
+                                            type="button"
+                                            onClick={() => {
+                                                resetAndClearErrors();
+                                                setOpen(false);
+                                                setPharmacy(null);
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </DialogClose>
+
+                                    <Button
+                                        type='submit'
+                                        variant="default"
+                                        disabled={processing}
+                                    >
+                                        {processing && <Spinner />}
+                                        Update
+                                    </Button>
+                                </DialogFooter>
+                            </>
+                        )}
+                    </Form>
+                </DialogContent>
+            </Dialog>
+        </AppLayout >
     );
 };
 
