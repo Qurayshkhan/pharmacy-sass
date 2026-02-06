@@ -10,7 +10,7 @@ class PharmacyRepository implements PharmacyInterface
 {
     public function getPharmacies(): LengthAwarePaginator
     {
-        return Pharmacy::select('license_number', 'contact', 'user_id')->with('user:id,name,email,status')->paginate(25);
+        return Pharmacy::select('uuid','id','license_number', 'contact', 'user_id')->with('user:id,name,email,status')->paginate(25);
     }
 
     public function create(array $data): Pharmacy

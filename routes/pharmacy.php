@@ -11,5 +11,5 @@ Route::group(['prefix' => 'pharmacies'], function () {
 });
 Route::group(['prefix' => 'pharmacies', 'middleware' => ['auth']], function () {
     Route::get('/', [PharmacyController::class, 'index'])->name('pharmacies.index');
-
+    // Route::put('/update/{uuid}', [PharmacyController::class, 'update'])->name('pharmacies.adminUpdate');
 });

@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-
+use Illuminate\Support\Facades\Redirect;
 class PharmacyController extends Controller
 {
     protected $pharmacyService;
@@ -41,12 +41,10 @@ class PharmacyController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Created'], 201);
+            return Redirect::route('pharmacies.index')->with('success', 'Pharmacy created and invite send successfully.');
         } catch (\Exception $e) {
-
             DB::rollBack();
-
-            return response()->json(['error' => $e->getMessage()], 500);
+            return Redirect::back()->with('error', 'Failed to create pharmacy.');
         }
     }
 
@@ -62,7 +60,6 @@ class PharmacyController extends Controller
         if ($user->pharmacy->is_registered) {
             abort(403, "Pharmacy already registered with this link.");
         }
-        $user->load('pharmacy');
 
         return Inertia::render('pharmacies/register', ['user' => $user]);
     }
@@ -86,10 +83,10 @@ class PharmacyController extends Controller
             $this->pharmacyService->updatePharmacy($pharmacy, $request->validated());
             $this->userService->updateUser($request->validated());
             DB::commit();
-            return response()->json(['message' => 'updated'], 200);
+            return Redirect::route('login')->with('success', 'Pharmacy updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new Exception($e, 500);
+           return Redirect::back()->with('error', 'Failed to update pharmacy.');
         }
     }
 }

@@ -1,6 +1,7 @@
 import { AppContent } from '@/components/app-content';
 import { AppHeader } from '@/components/app-header';
 import { AppShell } from '@/components/app-shell';
+import { GlobalAlert } from '@/components/global-alert';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppHeaderLayout({
@@ -10,7 +11,10 @@ export default function AppHeaderLayout({
     return (
         <AppShell>
             <AppHeader breadcrumbs={breadcrumbs} />
-            <AppContent>{children}</AppContent>
+            <AppContent>
+                <GlobalAlert />
+                {children}
+            </AppContent>
         </AppShell>
     );
 }

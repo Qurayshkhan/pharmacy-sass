@@ -14,7 +14,7 @@ class UserRepository implements UserInterface
 
     public function getUserByUuid(string $uuid): ?User
     {
-        return User::where('uuid', $uuid)->first();
+        return User::select('id', 'name','email', 'uuid')->where('uuid', $uuid)->first();
     }
 
     public function updateUser(array $data): bool
