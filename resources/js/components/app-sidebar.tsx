@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Store } from 'lucide-react';
-import { NavFooter } from '@/components/nav-footer';
+// import { BookOpen, Folder, LayoutGrid, Store } from 'lucide-react';
+// import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
