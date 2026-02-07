@@ -21,6 +21,7 @@ class UpdatePharmacyRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             'name' => 'required|string|max:255',
             'is_update_pharmacy' => 'nullable',
@@ -31,6 +32,7 @@ class UpdatePharmacyRequest extends FormRequest
             'contact' => 'required|string',
             'branch' => 'nullable',
             'uuid' => 'nullable',
+            'status' => 'nullable',
         ];
     }
 }

@@ -17,6 +17,7 @@ import {
 import FullPageSpinner from '@/components/ui/full-page-spinner';
 import { Input } from '@/components/ui/input';
 import Pagination from '@/components/ui/pagination';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import {
     Table,
@@ -43,6 +44,7 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
 
     const [pharmacy, setPharmacy] = useState<Pharmacy | null>(null);
     const [open, setOpen] = useState(false);
+    const [addDialogOpen, setAddDialogOpen] = useState(false);
 
 
     if (!pharmacies) {
@@ -64,39 +66,48 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                         <div className='flex items-center gap-2 justify-between w-full'>
                             <h1 className="text-2xl font-semibold">Pharmacies</h1>
 
-                            <Dialog>
-                                <form>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline"> <Plus /> Add Pharmacy</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-sm">
-                                        <DialogHeader>
-                                            <DialogTitle>Add Pharmacy</DialogTitle>
-                                        </DialogHeader>
-                                        <Form {...store.form()} method='POST'>
-                                            {({ processing, errors }) => (
-                                                <>
-
-                                                    <Label htmlFor="email" required>Email</Label>
-                                                    <Input id="email" name="email" placeholder='Enter email address' />
-                                                    <InputError
-                                                        message={errors.email}
-                                                        className="mt-2"
-                                                    />
-                                                    <DialogFooter className='py-4'>
-                                                        <DialogClose asChild>
-                                                            <Button variant="outline">Cancel</Button>
-                                                        </DialogClose>
-                                                        <Button type="submit" disabled={processing}>
-                                                            {processing && <Spinner />}
-                                                            Send Invite
+                            <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline"> <Plus /> Add Pharmacy</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-sm">
+                                    <DialogHeader>
+                                        <DialogTitle>Add Pharmacy</DialogTitle>
+                                    </DialogHeader>
+                                    <Form
+                                        {...store.form()}
+                                        method='POST'
+                                        onSuccess={() => {
+                                            setAddDialogOpen(false);
+                                        }}
+                                    >
+                                        {({ processing, errors }) => (
+                                            <>
+                                                <Label htmlFor="email" required>Email</Label>
+                                                <Input id="email" name="email" placeholder='Enter email address' />
+                                                <InputError
+                                                    message={errors.email}
+                                                    className="mt-2"
+                                                />
+                                                <DialogFooter className='py-4'>
+                                                    <DialogClose asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            type="button"
+                                                            onClick={() => setAddDialogOpen(false)}
+                                                        >
+                                                            Cancel
                                                         </Button>
-                                                    </DialogFooter>
-                                                </>
-                                            )}
-                                        </Form>
-                                    </DialogContent>
-                                </form>
+                                                    </DialogClose>
+                                                    <Button type="submit" disabled={processing}>
+                                                        {processing && <Spinner />}
+                                                        Send Invite
+                                                    </Button>
+                                                </DialogFooter>
+                                            </>
+                                        )}
+                                    </Form>
+                                </DialogContent>
                             </Dialog>
                         </div>
                     </div>
@@ -139,7 +150,7 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                                                             }
                                                         >
                                                             {pharmacy.user?.status === 1
-                                                                ? 'Active'
+                                                                ? 'Active '
                                                                 : 'Inactive'}
                                                         </Badge>
                                                     </TableCell>
@@ -159,7 +170,6 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                                                                 }>
                                                                     Edit
                                                                 </DropdownMenuItem>
-                                                                <DropdownMenuItem>Duplicate</DropdownMenuItem>
                                                                 <DropdownMenuSeparator />
                                                                 <DropdownMenuItem variant="destructive">
                                                                     Delete
@@ -189,6 +199,7 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                     </Card>
                 </div>
             </Deferred>
+
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -303,6 +314,27 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                                             className="mt-2"
                                         />
                                     </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="status" required>Status</Label>
+                                        <Select name='status' defaultValue={String(pharmacy?.user?.status)}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Status</SelectLabel>
+                                                    <SelectItem value='1'>Active</SelectItem>
+                                                    <SelectItem value='0'>Inactive</SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+
+                                        <InputError
+                                            message={errors.status}
+                                            className="mt-2"
+                                        />
+                                    </div>
+
                                 </div>
                                 <DialogFooter className="gap-2 py-2">
                                     <DialogClose asChild>
