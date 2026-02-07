@@ -46,4 +46,9 @@ class UserService
 
         return $this->userRepository->updateUser($data);
     }
+
+    public function deletePharmacyUser($uuid): ?bool
+    {
+        return $this->getUserByUuid($uuid)->delete();
+    }
 }

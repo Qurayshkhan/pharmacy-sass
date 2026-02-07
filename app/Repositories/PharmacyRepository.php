@@ -20,7 +20,10 @@ class PharmacyRepository implements PharmacyInterface
 
     public function getPharmacyByUserId(int $userId): ?Pharmacy
     {
-        return Pharmacy::where('user_id', $userId)->first();
+        return Pharmacy::select('uuid', 'id', 'license_number', 'contact', 'user_id', 'branch', 'address')
+            ->with('user:uuid,id,name,email,status')
+            ->where('user_id', $userId)
+            ->first();
     }
 
     public function getPharmacyByUuid(string $uuid): ?Pharmacy

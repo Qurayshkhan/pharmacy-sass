@@ -1,12 +1,17 @@
-import { Deferred, Form, Head } from '@inertiajs/react';
+import { Deferred, Form, Head, Link } from '@inertiajs/react';
 import { MoreHorizontalIcon, Plus } from "lucide-react"
 import { useState } from 'react';
-import InputError from '@/components/input-error';
-import Label from '@/components/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogFooter, DialogClose, DialogHeader } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,10 +20,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import FullPageSpinner from '@/components/ui/full-page-spinner';
-import { Input } from '@/components/ui/input';
 import Pagination from '@/components/ui/pagination';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Spinner } from '@/components/ui/spinner';
 import {
     Table,
     TableBody,
@@ -29,7 +31,7 @@ import {
 } from "@/components/ui/table"
 
 import AppLayout from '@/layouts/app-layout';
-import { store, update } from '@/routes/pharmacies';
+import { pharmacyCreate, adminEdit, pharmacyDestroy } from '@/routes/pharmacies';
 import type { Pagination as PaginationType } from '@/types/pagination';
 import type { Pharmacy } from './types';
 
@@ -41,12 +43,8 @@ interface PharmacyProps {
 }
 
 const Pharmacies = ({ pharmacies }: PharmacyProps) => {
-
-    const [pharmacy, setPharmacy] = useState<Pharmacy | null>(null);
-    const [open, setOpen] = useState(false);
-    const [addDialogOpen, setAddDialogOpen] = useState(false);
-
-
+    const [pharmacy, setPharmacy] = useState<Pharmacy | null>();
+    const [openConfirmation, setOpenConfirmation] = useState<boolean>(false);
     if (!pharmacies) {
         return (
             <AppLayout>
@@ -63,53 +61,13 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
             <Deferred data={['pharmacies']} fallback={<FullPageSpinner />}>
                 <div className="space-y-6 p-6">
                     <div className="flex items-center justify-between">
-                        <div className='flex items-center gap-2 justify-between w-full'>
-                            <h1 className="text-2xl font-semibold">Pharmacies</h1>
-
-                            <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-                                <DialogTrigger asChild>
-                                    <Button variant="outline"> <Plus /> Add Pharmacy</Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-sm">
-                                    <DialogHeader>
-                                        <DialogTitle>Add Pharmacy</DialogTitle>
-                                    </DialogHeader>
-                                    <Form
-                                        {...store.form()}
-                                        method='POST'
-                                        onSuccess={() => {
-                                            setAddDialogOpen(false);
-                                        }}
-                                    >
-                                        {({ processing, errors }) => (
-                                            <>
-                                                <Label htmlFor="email" required>Email</Label>
-                                                <Input id="email" name="email" placeholder='Enter email address' />
-                                                <InputError
-                                                    message={errors.email}
-                                                    className="mt-2"
-                                                />
-                                                <DialogFooter className='py-4'>
-                                                    <DialogClose asChild>
-                                                        <Button
-                                                            variant="outline"
-                                                            type="button"
-                                                            onClick={() => setAddDialogOpen(false)}
-                                                        >
-                                                            Cancel
-                                                        </Button>
-                                                    </DialogClose>
-                                                    <Button type="submit" disabled={processing}>
-                                                        {processing && <Spinner />}
-                                                        Send Invite
-                                                    </Button>
-                                                </DialogFooter>
-                                            </>
-                                        )}
-                                    </Form>
-                                </DialogContent>
-                            </Dialog>
-                        </div>
+                        <h1 className="text-2xl font-semibold">Pharmacies</h1>
+                        <Button variant="outline" asChild>
+                            <Link href={pharmacyCreate()}>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Pharmacy
+                            </Link>
+                        </Button>
                     </div>
 
                     <Card>
@@ -163,17 +121,22 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                                                                 </Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem onSelect={() => {
-                                                                    setPharmacy(pharmacy);
-                                                                    setOpen(true)
-                                                                }
-                                                                }>
-                                                                    Edit
+                                                                <DropdownMenuItem asChild>
+                                                                    <Link href={adminEdit(pharmacy.user?.uuid || '')}>
+                                                                        Edit
+                                                                    </Link>
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuSeparator />
-                                                                <DropdownMenuItem variant="destructive">
+                                                                <DropdownMenuItem
+                                                                    variant="destructive"
+                                                                    onClick={() => {
+                                                                        setPharmacy(pharmacy);
+                                                                        setOpenConfirmation(true);
+                                                                    }}
+                                                                >
                                                                     Delete
                                                                 </DropdownMenuItem>
+
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     </TableCell>
@@ -199,165 +162,60 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                     </Card>
                 </div>
             </Deferred>
+            <Dialog
+                open={openConfirmation}
+                onOpenChange={setOpenConfirmation}
+            >
 
-            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Edit Pharmacy</DialogTitle>
-                    </DialogHeader>
+                    <DialogTitle>
+                        Are you sure you want to delete this account?
+                    </DialogTitle>
+                    <DialogDescription>
+                        Once this account is deleted, all of its resources
+                        and data will also be permanently deleted. Please
+                        click on confirm button to
+                        permanently delete pharmacy account.
+                    </DialogDescription>
+
                     <Form
-                        {...update.form()}
-                        onSuccess={() => {
-                            setOpen(false);
-                            setPharmacy(null);
-                        }}
+                        {...pharmacyDestroy.form({ uuid: String(pharmacy?.user?.uuid) })}
                         options={{
                             preserveScroll: true,
                         }}
+                        resetOnSuccess
+                        onSuccess={() => {
+                            setOpenConfirmation(false);
+                            setPharmacy(null);
+                        }}
+                        className="space-y-6"
+
                     >
-
-                        {({ processing, resetAndClearErrors, errors }) => (
+                        {({ processing }) => (
                             <>
-                                <input type="hidden" name='uuid' value={String(pharmacy?.user?.uuid)} />
-                                <input type="hidden" name='is_update_pharmacy' defaultValue={String(true)} />
-                                <div className="grid gap-6">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="name" required>Pharmacy
-                                            name</Label>
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            required
-                                            autoFocus
-                                            tabIndex={1}
-                                            autoComplete="name"
-                                            name="name"
-                                            placeholder="Full name"
-                                            defaultValue={String(pharmacy?.user?.name)}
-                                        />
-                                        <InputError
-                                            message={errors.name}
-                                            className="mt-2"
-                                        />
-                                    </div>
-
-
-
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="license_number" required>License number</Label>
-                                        <Input
-                                            id="license_number"
-                                            type="text"
-                                            required
-                                            autoFocus
-                                            tabIndex={1}
-                                            autoComplete="name"
-                                            name="license_number"
-                                            placeholder="License number"
-                                            defaultValue={String(pharmacy?.license_number)}
-                                        />
-                                        <InputError
-                                            message={errors.license_number}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="contact" required>Contact</Label>
-                                        <Input
-                                            id="contact"
-                                            type="text"
-                                            required
-                                            autoFocus
-                                            tabIndex={1}
-                                            autoComplete="name"
-                                            name="contact"
-                                            placeholder="Contact number"
-                                            defaultValue={String(pharmacy?.contact)}
-                                        />
-                                        <InputError
-                                            message={errors.contact}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="branch">Branch Name (optional)</Label>
-                                        <Input
-                                            id="branch"
-                                            type="text"
-                                            autoFocus
-                                            tabIndex={1}
-                                            autoComplete="name"
-                                            name="branch"
-                                            placeholder="Branch name"
-                                            defaultValue={String(pharmacy?.branch)}
-                                        />
-                                        <InputError
-                                            message={errors.branch}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="address" required>Address</Label>
-                                        <Input
-                                            id="address"
-                                            type="text"
-                                            required
-                                            autoFocus
-                                            tabIndex={1}
-                                            autoComplete="name"
-                                            name="address"
-                                            placeholder="Address"
-                                            defaultValue={String(pharmacy?.address)}
-                                        />
-                                        <InputError
-                                            message={errors.address}
-                                            className="mt-2"
-                                        />
-                                    </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="status" required>Status</Label>
-                                        <Select name='status' defaultValue={String(pharmacy?.user?.status)}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select Status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Status</SelectLabel>
-                                                    <SelectItem value='1'>Active</SelectItem>
-                                                    <SelectItem value='0'>Inactive</SelectItem>
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-
-                                        <InputError
-                                            message={errors.status}
-                                            className="mt-2"
-                                        />
-                                    </div>
-
-                                </div>
-                                <DialogFooter className="gap-2 py-2">
+                                <DialogFooter className="gap-2">
                                     <DialogClose asChild>
                                         <Button
                                             variant="secondary"
-                                            type="button"
-                                            onClick={() => {
-                                                resetAndClearErrors();
-                                                setOpen(false);
-                                                setPharmacy(null);
-                                            }}
+                                            onClick={() =>
+                                                setOpenConfirmation(false)
+                                            }
                                         >
                                             Cancel
                                         </Button>
                                     </DialogClose>
 
                                     <Button
-                                        type='submit'
-                                        variant="default"
+                                        variant="destructive"
                                         disabled={processing}
+                                        asChild
                                     >
-                                        {processing && <Spinner />}
-                                        Update
+                                        <button
+                                            type="submit"
+                                            data-test="confirm-delete-user-button"
+                                        >
+                                            Confirm
+                                        </button>
                                     </Button>
                                 </DialogFooter>
                             </>
@@ -365,7 +223,7 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
                     </Form>
                 </DialogContent>
             </Dialog>
-        </AppLayout >
+        </AppLayout>
     );
 };
 

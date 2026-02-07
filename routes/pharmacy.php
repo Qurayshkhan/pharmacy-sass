@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Pharmacy\PharmacyController;
-use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'pharmacies'], function () {
@@ -11,10 +10,8 @@ Route::group(['prefix' => 'pharmacies'], function () {
 
 });
 Route::group(['prefix' => 'pharmacies', 'middleware' => ['auth']], function () {
+    Route::get('/pharmacy/create', [PharmacyController::class, 'create'])->name('pharmacies.pharmacyCreate');
     Route::get('/', [PharmacyController::class, 'index'])->name('pharmacies.index');
-    Route::put('/admin-update', [PharmacyController::class, 'adminUpdate'])->name('pharmacies.adminUpdate');
-});
-
-Route::group(['prefix' => 'users', 'middleware' => ['auth']], function () {
-    Route::get('/update/{uuid}', [UserController::class, 'update'])->name('users.updateStatus');
+    Route::get('/{uuid}/edit', [PharmacyController::class, 'adminEdit'])->name('pharmacies.adminEdit');
+    Route::delete('/{uuid}/delete', [PharmacyController::class, 'destroy'])->name('pharmacies.pharmacyDestroy');
 });

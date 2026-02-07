@@ -31,6 +31,31 @@ class PharmacyController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return Inertia::render('pharmacies/create');
+    }
+
+    public function adminEdit($uuid)
+    {
+        $user = $this->userService->getUserByUuid($uuid);
+        if (! $user) {
+            abort(404);
+        }
+
+        $pharmacy = $this->pharmacyService->getPharmacyByUserId($user->id);
+        if (! $pharmacy) {
+            abort(404);
+        }
+
+        // Load user relationship
+        $pharmacy->load('user');
+
+        return Inertia::render('pharmacies/edit', [
+            'pharmacy' => $pharmacy,
+        ]);
+    }
+
     public function store(PharmacyStoreRequest $request)
     {
         try {
@@ -71,15 +96,13 @@ class PharmacyController extends Controller
 
             DB::beginTransaction();
             $user = $this->userService->getUserByUuid($request->input('uuid'));
-
             if (! $user) {
-                return false;
+                return abort(404, 'User not found');
             }
             $pharmacy = $this->pharmacyService->getPharmacyByUserId($user->id);
             if (! $pharmacy) {
-                return false;
+                return abort(404, 'Pharmacy not found');
             }
-
             $this->pharmacyService->updatePharmacy($pharmacy, $request->validated());
             $this->userService->updateUser([
                 'name' => $request->input('name', ''),
@@ -97,6 +120,17 @@ class PharmacyController extends Controller
             info($e->getMessage());
             DB::rollBack();
 
+            return Redirect::back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy($uuid)
+    {
+        try {
+            $this->userService->deletePharmacyUser($uuid);
+
+            return Redirect::route('pharmacies.index')->with('success', 'Pharmacy deleted successfully.');
+        } catch (\Exception $e) {
             return Redirect::back()->with('error', $e->getMessage());
         }
     }
