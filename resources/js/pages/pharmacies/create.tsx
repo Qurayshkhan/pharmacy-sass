@@ -3,25 +3,32 @@ import { ArrowLeft } from 'lucide-react';
 import InputError from '@/components/input-error';
 import Label from '@/components/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
-import { index, store } from '@/routes/pharmacies';
+import { index, pharmacyCreate, store } from '@/routes/pharmacies';
+import type { BreadcrumbItem } from '@/types';
 
 const CreatePharmacy = () => {
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Pharmacies',
+            href: index().url,
+        },
+        {
+            title: 'Add pharmacy',
+            href: pharmacyCreate().url,
+        },
+    ];
+
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Add Pharmacy" />
             <div className="space-y-6 p-6">
                 <div className="flex items-center gap-4 justify-between">
-                    <div>
-                        <h1 className="text-2xl font-semibold">Add Pharmacy</h1>
-                        <p className="text-sm text-muted-foreground">
-                            Send an invitation to create a new pharmacy account
-                        </p>
-                    </div>
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="default" size="icon" asChild>
                         <Link href={index()}>
                             <ArrowLeft className="h-4 w-4" />
                             <span className="sr-only">Back</span>
@@ -29,10 +36,7 @@ const CreatePharmacy = () => {
                     </Button>
                 </div>
 
-                <Card className="">
-                    <CardHeader>
-                        <CardTitle>Pharmacy Information</CardTitle>
-                    </CardHeader>
+                <Card>
                     <CardContent>
                         <Form
                             {...store.form()}

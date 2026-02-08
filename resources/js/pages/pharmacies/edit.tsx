@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import InputError from '@/components/input-error';
 import Label from '@/components/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -17,30 +17,34 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
 import { index, update } from '@/routes/pharmacies';
+import type { BreadcrumbItem } from '@/types';
 import type { Pharmacy } from './types';
-
 interface EditPharmacyProps {
     pharmacy: Pharmacy;
 }
 
 const EditPharmacy = ({ pharmacy }: EditPharmacyProps) => {
-    console.log("🚀 ~ EditPharmacy ~ pharmacy:", pharmacy)
     if (!pharmacy) {
         return null;
     }
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Pharmacies',
+            href: index().url,
+        },
+        {
+            title: 'Edit pharmacy',
+            href: '',
+        },
+    ];
+
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Pharmacy" />
             <div className="space-y-6 p-6">
                 <div className="flex justify-between items-center gap-4">
-                    <div>
-                        <h1 className="text-2xl font-semibold">Edit Pharmacy</h1>
-                        <p className="text-sm text-muted-foreground">
-                            Update pharmacy information and status
-                        </p>
-                    </div>
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="default" size="icon" asChild>
                         <Link href={index()}>
                             <ArrowLeft className="h-4 w-4" />
                             <span className="sr-only">Back</span>
@@ -48,10 +52,7 @@ const EditPharmacy = ({ pharmacy }: EditPharmacyProps) => {
                     </Button>
                 </div>
 
-                <Card className="">
-                    <CardHeader>
-                        <CardTitle>Pharmacy Details</CardTitle>
-                    </CardHeader>
+                <Card>
                     <CardContent>
                         <Form
                             {...update.form()}

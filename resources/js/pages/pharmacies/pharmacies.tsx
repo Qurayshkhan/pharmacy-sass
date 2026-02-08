@@ -32,9 +32,10 @@ import {
 
 import AppLayout from '@/layouts/app-layout';
 import { pharmacyCreate, adminEdit, pharmacyDestroy } from '@/routes/pharmacies';
+import { index as pharmaciesIndex } from '@/routes/pharmacies';
+import type { BreadcrumbItem } from '@/types';
 import type { Pagination as PaginationType } from '@/types/pagination';
 import type { Pharmacy } from './types';
-
 
 
 
@@ -55,13 +56,20 @@ const Pharmacies = ({ pharmacies }: PharmacyProps) => {
         );
     }
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Pharmacies',
+            href: pharmaciesIndex().url,
+        },
+    ];
+
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title='Pharmacies' />
             <Deferred data={['pharmacies']} fallback={<FullPageSpinner />}>
                 <div className="space-y-6 p-6">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-semibold">Pharmacies</h1>
+                    <div className="flex items-center justify-end">
+
                         <Button variant="outline" asChild>
                             <Link href={pharmacyCreate()}>
                                 <Plus className="mr-2 h-4 w-4" />

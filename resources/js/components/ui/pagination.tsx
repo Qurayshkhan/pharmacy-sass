@@ -117,7 +117,7 @@ const Pagination = ({
                         <li key={link.url || `page-${index}`}>
                             <button
                                 onClick={(e) => handleClick(link.url, e)}
-                                disabled={!link.url}
+                                disabled={link.active}
                                 aria-label={pageNumber ? `Go to page ${pageNumber}` : `Go to ${link.label}`}
                                 aria-current={link.active ? 'page' : undefined}
                                 className={cn(
