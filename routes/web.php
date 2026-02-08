@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Categories\CategoryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -13,5 +14,10 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-require __DIR__ . '/pharmacy.php';
-require __DIR__ . '/settings.php';
+
+Route::group(['prefix' => 'categories', ['middleware' => 'auth']], function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
+});
+
+require __DIR__.'/pharmacy.php';
+require __DIR__.'/settings.php';

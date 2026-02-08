@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Interface\UserInterface;
+use App\Interfaces\UserInterface;
 use App\Models\User;
 
 class UserRepository implements UserInterface
@@ -14,7 +14,7 @@ class UserRepository implements UserInterface
 
     public function getUserByUuid(string $uuid): ?User
     {
-        return User::select('id', 'name','email', 'uuid')->where('uuid', $uuid)->first();
+        return User::select('id', 'name', 'email', 'uuid')->where('uuid', $uuid)->first();
     }
 
     public function updateUser(array $data): bool

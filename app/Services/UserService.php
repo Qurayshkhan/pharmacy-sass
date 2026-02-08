@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
 use App\Mail\SendInviteToUserMail;
 use App\Models\User;

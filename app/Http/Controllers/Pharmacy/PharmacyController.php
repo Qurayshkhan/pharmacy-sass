@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Pharmacy;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PharmacyStoreRequest;
 use App\Http\Requests\UpdatePharmacyRequest;
-use App\Service\PharmacyService;
-use App\Service\UserService;
+use App\Services\PharmacyService;
+use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -27,7 +27,9 @@ class PharmacyController extends Controller
     public function index()
     {
         return Inertia::render('pharmacies/pharmacies', [
-            'pharmacies' => Inertia::defer(fn () => $this->pharmacyService->getPharmacies()),
+            'pharmacies' => Inertia::defer(fn () => $this->pharmacyService->getPharmacies(
+                ['uuid', 'id', 'license_number', 'contact', 'user_id', 'branch', 'address']
+            )),
         ]);
     }
 

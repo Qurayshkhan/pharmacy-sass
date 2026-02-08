@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interface;
+namespace App\Interfaces;
 
 use App\Models\User;
 
@@ -8,7 +8,7 @@ interface UserInterface
 {
     public function create(array $data): User;
 
-     public function getUserByUuid(string $uuid): ?User;
+    public function getUserByUuid(string $uuid): ?User;
 
     public function updateUser(array $data): bool;
 

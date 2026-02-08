@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
 use App\Models\Pharmacy;
 use App\Repositories\PharmacyRepository;
@@ -19,8 +19,10 @@ class PharmacyService
         return $this->pharmacyRepository->create($data);
     }
 
-    public function getPharmacies(){
-        return $this->pharmacyRepository->getPharmacies();
+    public function getPharmacies($columns)
+    {
+
+        return $this->pharmacyRepository->getPharmacies($columns);
     }
 
     public function getPharmacyByUserId(int $userId): ?Pharmacy
@@ -33,7 +35,7 @@ class PharmacyService
         return $this->pharmacyRepository->getPharmacyByUuid($uuid);
     }
 
-    public function updatePharmacy($pharmacy,array $data): bool
+    public function updatePharmacy($pharmacy, array $data): bool
     {
         $data = [
             'license_number' => $data['license_number'],

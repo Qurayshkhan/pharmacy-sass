@@ -2,15 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Interface\PharmacyInterface;
+use App\Interfaces\PharmacyInterface;
 use App\Models\Pharmacy;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PharmacyRepository implements PharmacyInterface
 {
-    public function getPharmacies(): LengthAwarePaginator
+    public function getPharmacies(array $columns): LengthAwarePaginator
     {
-        return Pharmacy::select('uuid', 'id', 'license_number', 'contact', 'user_id', 'branch', 'address')->with('user:uuid,id,name,email,status')->orderByDesc('created_at')->paginate(25);
+        return Pharmacy::select($columns)->with('user:uuid,id,name,email,status')->orderByDesc('created_at')->paginate(25);
     }
 
     public function create(array $data): Pharmacy
