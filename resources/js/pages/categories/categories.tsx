@@ -1,6 +1,6 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Deferred, Form, Head, useForm } from '@inertiajs/react';
 import { MoreHorizontalIcon, Plus } from "lucide-react"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import InputError from '@/components/input-error';
 import Label from '@/components/label';
 import { Modal } from '@/components/modal';
@@ -8,12 +8,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import FullPageSpinner from '@/components/ui/full-page-spinner';
 import { Input } from '@/components/ui/input';
 import Pagination from '@/components/ui/pagination';
 import {
@@ -25,151 +34,352 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import AppLayout from '@/layouts/app-layout'
-import { index, store } from '@/routes/categories';
+import { index, store, update, destroy } from '@/routes/categories';
 import type { BreadcrumbItem } from '@/types';
 import type { Pagination as PaginationType } from '@/types/pagination';
 import type { Category } from './types';
-interface categoryProps {
-    categories: PaginationType<Category>
+
+interface CategoryProps {
+    categories?: PaginationType<Category>;
+    category?: Category;
 }
 
-const Categories = ({ categories }: categoryProps) => {
-    const [show, setShow] = useState(false);
-    const breadcrumb: BreadcrumbItem[] = [
+const Categories = ({ categories, category: editCategory }: CategoryProps) => {
+    const [showModal, setShowModal] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
+    const [openConfirmation, setOpenConfirmation] = useState(false);
+
+    const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Categories',
             href: index().url,
         },
     ];
+
     const form = useForm({
         name: '',
         description: '',
+        is_active: true,
     });
 
-    const showModal = () => {
+    useEffect(() => {
+        if (editCategory && !showModal) {
+            const isActive = typeof editCategory.is_active === 'number'
+                ? editCategory.is_active === 1
+                : Boolean(editCategory.is_active);
 
-    }
+            form.setData({
+                name: editCategory.name || '',
+                description: editCategory.description || '',
+                is_active: isActive,
+            });
 
+            setTimeout(() => {
+                setIsEdit(true);
+                setEditingCategory(editCategory);
+                setShowModal(true);
+            }, 0);
+        }
 
+    }, [editCategory]);
+
+    const handleOpenModal = () => {
+        setIsEdit(false);
+        form.reset();
+        form.clearErrors();
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setIsEdit(false);
+        setEditingCategory(null);
+        form.reset();
+        form.clearErrors();
+    };
+
+    const handleEdit = (category: Category) => {
+        setIsEdit(true);
+        setEditingCategory(category);
+        const isActive = typeof category.is_active === 'number'
+            ? category.is_active === 1
+            : Boolean(category.is_active);
+        form.setData({
+            name: category.name || '',
+            description: category.description || '',
+            is_active: isActive,
+        });
+        form.clearErrors();
+        setShowModal(true);
+    };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
-        form.post(store().url, {
-            preserveScroll: true,
-            onSuccess: () => setShow(false),
-        })
+
+        if (isEdit && editingCategory?.id) {
+            form.put(update(editingCategory.id).url, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    handleCloseModal();
+                    setEditingCategory(null);
+                },
+            });
+        } else {
+            form.post(store().url, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    handleCloseModal();
+                },
+            });
+        }
+    };
+
+    const handleDelete = (category: Category) => {
+        setDeletingCategory(category);
+        setOpenConfirmation(true);
+    };
+
+    if (!categories) {
+        return (
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <div className="space-y-6 p-6">
+                    <FullPageSpinner />
+                </div>
+            </AppLayout>
+        );
     }
 
     return (
-        <AppLayout breadcrumbs={breadcrumb}>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title='Categories' />
-            <div className="space-y-6 p-6">
-                <div className="flex items-center justify-end">
-                    <Button variant="outline" onClick={() => setShow(true)}>
-                        <Plus /> Add Category
-                    </Button>
-                </div>
-                <Card>
-                    <CardContent>
-                        <div className="overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className=''>Name</TableHead>
-                                        <TableHead className=''>Status</TableHead>
-                                        <TableHead className=''>Action</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {!categories?.data || categories?.data?.length === 0 ? (
+            <Deferred data={['categories']} fallback={<FullPageSpinner />}>
+                <div className="space-y-6 p-6">
+                    <div className="flex items-center justify-end">
+                        <Button variant="outline" onClick={handleOpenModal}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Category
+                        </Button>
+                    </div>
+
+                    <Card>
+                        <CardContent>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center">
-                                                Category not found
-                                            </TableCell>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Action</TableHead>
                                         </TableRow>
-                                    ) : (categories.data.map((item) => {
-                                        return <TableRow key={item?.id}>
-                                            <TableCell>{item?.name ?? 'N/A'}</TableCell>
-                                            <TableCell>
-                                                <Badge variant={item.is_active ? 'default' : 'secondary'}>
-                                                    {item?.is_active ? 'Active' : 'Inactive'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <TableCell>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="size-8">
-                                                                <MoreHorizontalIcon />
-                                                                <span className="sr-only">Open menu</span>
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem>
-                                                                Edit
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuSeparator />
-                                                            <DropdownMenuItem
-                                                                variant="destructive"
-                                                                onClick={() => {
-                                                                    // setPharmacy(pharmacy);
-                                                                    // setOpenConfirmation(true);
-                                                                }}
-                                                            >
-                                                                Delete
-                                                            </DropdownMenuItem>
-
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {!categories?.data || categories.data.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={4} className="text-center">
+                                                    No categories found
                                                 </TableCell>
-                                            </TableCell>
-                                        </TableRow>
-                                    })
-                                    )
-                                    }
-                                </TableBody>
-                            </Table>
-                        </div>
-                        {categories.links && categories.links?.length > 0 && (
-                            <Pagination
-                                links={categories.links}
-                                from={categories.from}
-                                to={categories.to}
-                                total={categories.total}
-                                infoLabel={`Showing ${categories.from || 0} to ${categories.to || 0} of ${categories.total} categories`}
-                                className="mt-6"
-                            />
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
+                                            </TableRow>
+                                        ) : (
+                                            categories.data.map((item) => (
+                                                <TableRow key={item.id}>
+                                                    <TableCell>{item.name ?? 'N/A'}</TableCell>
+                                                    <TableCell className="max-w-xs truncate">
+                                                        {item.description ?? 'N/A'}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge
+                                                            variant={
+                                                                item.is_active
+                                                                    ? 'default'
+                                                                    : 'secondary'
+                                                            }
+                                                        >
+                                                            {item.is_active ? 'Active' : 'Inactive'}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="icon" className="size-8">
+                                                                    <MoreHorizontalIcon />
+                                                                    <span className="sr-only">Open menu</span>
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem
+                                                                    onClick={() => handleEdit(item)}
+                                                                >
+                                                                    Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem
+                                                                    variant="destructive"
+                                                                    onClick={() => handleDelete(item)}
+                                                                >
+                                                                    Delete
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
 
-            <Modal show={show} onClose={() => setShow(false)}>
-                <div className='px-4'>
-                    <h1 className='text-xl py-2'>Add Category</h1>
-                    <div className=''>
-                        <form onClick={handleSubmit}>
-                            <div className='py-2'>
-                                <Label htmlFor='name' required>Name</Label>
-                                <Input name='name' id='name' value={form.data.name} onChange={(e) => form.setData('name', e.target.value)} placeholder='Category name' />
+                            {categories.links && categories.links.length > 0 && (
+                                <Pagination
+                                    links={categories.links}
+                                    from={categories.from}
+                                    to={categories.to}
+                                    total={categories.total}
+                                    infoLabel={`Showing ${categories.from || 0} to ${categories.to || 0} of ${categories.total} categories`}
+                                    className="mt-6"
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+            </Deferred>
+
+
+            <Modal show={showModal} onClose={handleCloseModal}>
+                <div className="px-4 py-4">
+                    <h1 className="text-xl font-semibold mb-4">
+                        {isEdit ? 'Edit Category' : 'Add Category'}
+                    </h1>
+                    <form onSubmit={handleSubmit}>
+                        <div className="space-y-4">
+                            <div>
+                                <Label htmlFor="name" required>
+                                    Name
+                                </Label>
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    value={form.data.name}
+                                    onChange={(e) => form.setData('name', e.target.value)}
+                                    placeholder="Category name"
+                                    disabled={form.processing}
+                                />
                                 <InputError message={form.errors.name} />
                             </div>
-                            <div className='py-2'>
-                                <Label htmlFor='description'>Description</Label>
-                                <Input name='description' id='description' value={form.data.description} onChange={(e) => form.setData("description", e.target.value)} placeholder='Write description...' />
+                            <div>
+                                <Label htmlFor="description">
+                                    Description
+                                </Label>
+                                <Input
+                                    id="description"
+                                    name="description"
+                                    value={form.data.description}
+                                    onChange={(e) => form.setData('description', e.target.value)}
+                                    placeholder="Write description..."
+                                    disabled={form.processing}
+                                />
                                 <InputError message={form.errors.description} />
                             </div>
-                            <div className='py-2 text-end'>
-                                <Button type='button' variant={"ghost"} onClick={() => setShow(false)}>Cancel</Button>
-                                <Button>Add category</Button>
-                            </div>
-                        </form>
-                    </div>
+                            {isEdit &&
+
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="is_active"
+                                        checked={form.data.is_active}
+                                        onChange={(e) => form.setData('is_active', e.target.checked)}
+                                        disabled={form.processing}
+                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                    />
+                                    <Label htmlFor="is_active">
+                                        <span className="font-normal">Active</span>
+                                    </Label>
+                                </div>
+                            }
+                        </div>
+                        <div className="flex justify-end gap-3 mt-6">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={handleCloseModal}
+                                disabled={form.processing}
+                            >
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={form.processing}>
+                                {form.processing
+                                    ? (isEdit ? 'Updating...' : 'Creating...')
+                                    : (isEdit ? 'Update Category' : 'Add Category')}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
             </Modal>
-        </AppLayout>
 
-    )
-}
+            <Dialog
+                open={openConfirmation}
+                onOpenChange={setOpenConfirmation}
+            >
+                <DialogContent>
+                    <DialogTitle>
+                        Are you sure you want to delete this category?
+                    </DialogTitle>
+                    <DialogDescription>
+                        Once this category is deleted, all of its data will be permanently
+                        deleted. This action cannot be undone. Please click on confirm button
+                        to permanently delete the category.
+                    </DialogDescription>
+
+                    <Form
+                        {...destroy.form(deletingCategory?.id || 0)}
+                        options={{
+                            preserveScroll: true,
+                        }}
+                        resetOnSuccess
+                        onSuccess={() => {
+                            setOpenConfirmation(false);
+                            setDeletingCategory(null);
+                        }}
+                        className="space-y-6"
+                    >
+                        {({ processing }) => (
+                            <>
+                                <DialogFooter className="gap-2">
+                                    <DialogClose asChild>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => {
+                                                setOpenConfirmation(false);
+                                                setDeletingCategory(null);
+                                            }}
+                                            disabled={processing}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </DialogClose>
+
+                                    <Button
+                                        variant="destructive"
+                                        disabled={processing}
+                                        asChild
+                                    >
+                                        <button
+                                            type="submit"
+                                            data-test="confirm-delete-category-button"
+                                        >
+                                            {processing ? 'Deleting...' : 'Confirm'}
+                                        </button>
+                                    </Button>
+                                </DialogFooter>
+                            </>
+                        )}
+                    </Form>
+                </DialogContent>
+            </Dialog>
+        </AppLayout>
+    );
+};
 
 export default Categories;
