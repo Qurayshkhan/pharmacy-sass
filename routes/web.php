@@ -17,6 +17,7 @@ Route::get('dashboard', function () {
 
 Route::group(['prefix' => 'categories', ['middleware' => 'auth']], function () {
     Route::get('/', [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/store', [CategoryController::class, 'store'])->name('categories.store');
 });
 
 require __DIR__.'/pharmacy.php';

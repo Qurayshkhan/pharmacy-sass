@@ -1,5 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { MoreHorizontalIcon, Plus } from "lucide-react"
+import { useState } from 'react';
+import InputError from '@/components/input-error';
+import Label from '@/components/label';
+import { Modal } from '@/components/modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +14,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from '@/components/ui/input';
 import Pagination from '@/components/ui/pagination';
 import {
     Table,
@@ -20,7 +25,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import AppLayout from '@/layouts/app-layout'
-import { index } from '@/routes/categories';
+import { index, store } from '@/routes/categories';
 import type { BreadcrumbItem } from '@/types';
 import type { Pagination as PaginationType } from '@/types/pagination';
 import type { Category } from './types';
@@ -28,19 +33,39 @@ interface categoryProps {
     categories: PaginationType<Category>
 }
 
-const categories = ({ categories }: categoryProps) => {
+const Categories = ({ categories }: categoryProps) => {
+    const [show, setShow] = useState(false);
     const breadcrumb: BreadcrumbItem[] = [
         {
             title: 'Categories',
             href: index().url,
         },
     ];
+    const form = useForm({
+        name: '',
+        description: '',
+    });
+
+    const showModal = () => {
+
+    }
+
+
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+        e.preventDefault();
+        form.post(store().url, {
+            preserveScroll: true,
+            onSuccess: () => setShow(false),
+        })
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumb}>
             <Head title='Categories' />
             <div className="space-y-6 p-6">
                 <div className="flex items-center justify-end">
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => setShow(true)}>
                         <Plus /> Add Category
                     </Button>
                 </div>
@@ -118,9 +143,33 @@ const categories = ({ categories }: categoryProps) => {
                     </CardContent>
                 </Card>
             </div>
+
+            <Modal show={show} onClose={() => setShow(false)}>
+                <div className='px-4'>
+                    <h1 className='text-xl py-2'>Add Category</h1>
+                    <div className=''>
+                        <form onClick={handleSubmit}>
+                            <div className='py-2'>
+                                <Label htmlFor='name' required>Name</Label>
+                                <Input name='name' id='name' value={form.data.name} onChange={(e) => form.setData('name', e.target.value)} placeholder='Category name' />
+                                <InputError message={form.errors.name} />
+                            </div>
+                            <div className='py-2'>
+                                <Label htmlFor='description'>Description</Label>
+                                <Input name='description' id='description' value={form.data.description} onChange={(e) => form.setData("description", e.target.value)} placeholder='Write description...' />
+                                <InputError message={form.errors.description} />
+                            </div>
+                            <div className='py-2 text-end'>
+                                <Button type='button' variant={"ghost"} onClick={() => setShow(false)}>Cancel</Button>
+                                <Button>Add category</Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </Modal>
         </AppLayout>
 
     )
 }
 
-export default categories;
+export default Categories;

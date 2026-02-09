@@ -12,4 +12,9 @@ class CategoryRepository implements CategoryInterface
     {
         return Category::select($columns)->paginate(25);
     }
+
+    public function create($data)
+    {
+        return Category::create($data);
+    }
 }
