@@ -7,6 +7,7 @@ import { Modal } from '@/components/modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogClose,
@@ -83,7 +84,7 @@ const Categories = ({ categories, category: editCategory }: CategoryProps) => {
             }, 0);
         }
 
-    }, [editCategory]);
+    }, [editCategory, form, showModal]);
 
     const handleOpenModal = () => {
         setIsEdit(false);
@@ -283,19 +284,17 @@ const Categories = ({ categories, category: editCategory }: CategoryProps) => {
                                 <InputError message={form.errors.description} />
                             </div>
                             {isEdit &&
-
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        type="checkbox"
+                                <div className="flex items-center space-x-3">
+                                    <Checkbox
                                         id="is_active"
                                         checked={form.data.is_active}
-                                        onChange={(e) => form.setData('is_active', e.target.checked)}
+                                        onCheckedChange={(checked) =>
+                                            form.setData('is_active', Boolean(checked))
+                                        }
                                         disabled={form.processing}
-                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                                     />
-                                    <Label htmlFor="is_active">
-                                        <span className="font-normal">Active</span>
-                                    </Label>
+                                    <Label htmlFor="is_active">Active</Label>
+
                                 </div>
                             }
                         </div>
