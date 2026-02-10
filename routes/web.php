@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\PharmacySuppliers\PharmacySupplierController;
+use App\Http\Controllers\Suppliers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -21,6 +23,26 @@ Route::group(['prefix' => 'categories', 'middleware' => 'auth'], function () {
     Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/{id}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+});
+
+// Global Suppliers (Admin Only)
+Route::group(['prefix' => 'suppliers', 'middleware' => 'auth'], function () {
+    Route::get('/', [SupplierController::class, 'index'])->name('suppliers.index');
+    Route::post('/store', [SupplierController::class, 'store'])->name('suppliers.store');
+    Route::get('/{id}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
+    Route::put('/{id}', [SupplierController::class, 'update'])->name('suppliers.update');
+    Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+    Route::get('/all/select', [SupplierController::class, 'getAllForSelect'])->name('suppliers.getAllForSelect');
+});
+
+// Pharmacy Suppliers
+Route::group(['prefix' => 'pharmacy-suppliers', 'middleware' => 'auth'], function () {
+    Route::get('/', [PharmacySupplierController::class, 'index'])->name('pharmacy-suppliers.index');
+    Route::post('/store', [PharmacySupplierController::class, 'store'])->name('pharmacy-suppliers.store');
+    Route::post('/copy-from-global', [PharmacySupplierController::class, 'copyFromGlobal'])->name('pharmacy-suppliers.copyFromGlobal');
+    Route::get('/{id}/edit', [PharmacySupplierController::class, 'edit'])->name('pharmacy-suppliers.edit');
+    Route::put('/{id}', [PharmacySupplierController::class, 'update'])->name('pharmacy-suppliers.update');
+    Route::delete('/{id}', [PharmacySupplierController::class, 'destroy'])->name('pharmacy-suppliers.destroy');
 });
 
 require __DIR__.'/pharmacy.php';
