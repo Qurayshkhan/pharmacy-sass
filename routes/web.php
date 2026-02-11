@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\Medicines\MedicineController;
 use App\Http\Controllers\PharmacySuppliers\PharmacySupplierController;
 use App\Http\Controllers\Suppliers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,11 @@ Route::group(['prefix' => 'pharmacy-suppliers', 'middleware' => 'auth'], functio
     Route::get('/{id}/edit', [PharmacySupplierController::class, 'edit'])->name('pharmacy-suppliers.edit');
     Route::put('/{id}', [PharmacySupplierController::class, 'update'])->name('pharmacy-suppliers.update');
     Route::delete('/{id}', [PharmacySupplierController::class, 'destroy'])->name('pharmacy-suppliers.destroy');
+});
+
+Route::group(['prefix' => 'medicines', 'middleware' => ['auth']], function () {
+    Route::get('/', [MedicineController::class, 'index'])->name('medicines.index');
+    Route::get('/search', [MedicineController::class, 'search'])->name('medicines.search');
 });
 
 require __DIR__.'/pharmacy.php';

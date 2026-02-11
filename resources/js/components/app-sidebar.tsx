@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Box, LayoutGrid, Store, Package, Building2 } from 'lucide-react';
+import { Box, LayoutGrid, Store, Package, Building2, ClipboardPlus } from 'lucide-react';
 // import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as categories } from '@/routes/categories';
+import { index as medicines } from '@/routes/medicines';
 import { index as pharmaciesIndex } from '@/routes/pharmacies';
 import { index as pharmacySuppliersIndex } from '@/routes/pharmacy-suppliers';
 import { index as suppliersIndex } from '@/routes/suppliers';
@@ -45,12 +46,17 @@ export function AppSidebar() {
             href: categories(),
             icon: Box,
         },
+        {
+            title: 'Global medicines',
+            href: medicines(),
+            icon: ClipboardPlus,
+        },
     ];
 
     // Add Global Suppliers for Admin only
     if (userType === 1) { // User::TYPE_ADMIN
         mainNavItems.push({
-            title: 'Global Suppliers',
+            title: 'Global suppliers',
             href: suppliersIndex(),
             icon: Package,
         });
@@ -64,6 +70,8 @@ export function AppSidebar() {
             icon: Building2,
         });
     }
+
+
 
     return (
         <Sidebar collapsible="icon" variant="floating">

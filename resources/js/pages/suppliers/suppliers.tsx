@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import FullPageSpinner from '@/components/ui/full-page-spinner';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import Pagination from '@/components/ui/pagination';
 import {
     Table,
@@ -33,6 +32,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout'
 import { index, store, update, destroy } from '@/routes/suppliers';
 import type { BreadcrumbItem } from '@/types';
