@@ -2,10 +2,10 @@
 
 namespace App\Interfaces;
 
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\Paginator;
 
 interface MedicineInterface
 {
-    public function getAllMedicines(Request $request): Paginator;
+    public function getAllMedicines(Request $request): CursorPaginator;
 }

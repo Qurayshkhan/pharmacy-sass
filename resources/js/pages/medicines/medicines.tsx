@@ -8,42 +8,50 @@ import AppLayout from '@/layouts/app-layout';
 import { highlightText } from '@/lib/utils';
 import { index } from '@/routes/medicines';
 import type { BreadcrumbItem } from '@/types';
-import type { Pagination } from '@/types/pagination';
+import type { CursorPagination } from '@/types/pagination';
 import type { Medicine } from './types';
 interface MedicineProps {
-    medicines: Pagination<Medicine>,
+    medicines: CursorPagination<Medicine>,
     filters: {
         search?: string
     }
 }
 
 const Medicines = ({ medicines, filters }: MedicineProps) => {
-    const [search, setSearch] = useState(filters?.search ?? "");
+    // Always use localSearch for immediate, responsive input updates
+    // Initialize from filters.search on mount (e.g., when page loads with search param)
+    const [localSearch, setLocalSearch] = useState(filters?.search ?? "");
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Global medicines', href: index().url },
     ];
 
     const debounceSearch = useDebouncedCallback((value) => {
-        router.get(index().url, { search: value }, { preserveScroll: true, preserveState: true })
+        router.get(index().url, { search: value }, {
+            preserveScroll: true,
+            preserveState: true // Preserve state to maintain input focus
+            // InfiniteScroll will still reset due to the key prop changing
+        })
     }, 300)
 
-
-
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const search = e.target.value;
-        setSearch(search);
-        debounceSearch(search);
+        const value = e.target.value;
+        setLocalSearch(value); // Update immediately for responsive UI - no delay!
+        debounceSearch(value);
     }
+
+    // Use filters.search for highlighting (what was actually searched on server)
+    // Use localSearch for input display (immediate user feedback)
+    const searchForHighlight = filters?.search ?? localSearch;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Global Medicines" />
             <div className="space-y-6 p-6">
-                <div>
+                <div >
                     <Label htmlFor='search'>
                         Search
                     </Label>
-                    <Input name='search' id='search' value={search} onChange={handleSearch} placeholder='Search by name, company' className='w-full' />
+                    <Input name='search' id='search' value={localSearch} onChange={handleSearch} placeholder='Search by name, company' className='w-full' />
                 </div>
                 <Card>
                     <CardContent>
@@ -65,17 +73,20 @@ const Medicines = ({ medicines, filters }: MedicineProps) => {
                                             <div className="text-sm font-semibold text-slate-700">MRP</div>
                                         </div>
                                     </div>
-                                    <InfiniteScroll data="medicines">
-                                        {medicines.data.map((item, index) => (
+                                    <InfiniteScroll
+                                        data="medicines"
+                                        key={`medicines-${filters?.search ?? ''}`}
+                                    >
+                                        {medicines.data.map((item) => (
                                             <div
-                                                key={item.id || index}
+                                                key={item.id}
                                                 className="grid grid-cols-5 gap-4 px-6 py-4 border-b border-slate-200 hover:bg-slate-50 transition-colors"
                                             >
                                                 <div className="text-sm text-slate-900 font-medium">
-                                                    {highlightText(item?.name, search)}
+                                                    {highlightText(item?.name, searchForHighlight)}
                                                 </div>
                                                 <div className="text-sm text-slate-600">
-                                                    {highlightText(item?.company, search)}
+                                                    {highlightText(item?.company, searchForHighlight)}
                                                 </div>
                                                 <div className="text-sm text-slate-900">{item?.sale_price ? parseFloat(item.sale_price).toFixed(2) : '0.00'}</div>
                                                 <div className="text-sm text-slate-600">{item.pack_size}</div>
