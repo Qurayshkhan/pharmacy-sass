@@ -13,13 +13,20 @@ class MedicineRepository implements MedicineInterface
         $query = Medicine::query()
             ->select('id', 'name', 'company', 'pack_size', 'sale_price', 'mrp');
 
-        $query->when($request->search, function ($query, $search) {
-            // $query->whereAny([
-            //     'name',
-            //     'company',
-            // ], 'LIKE', '%'.$search.'%');
-            $query->whereFullText(['name', 'company'], $search);
-        });
+        // Get and sanitize search term
+        $search = trim($request->input('search', ''));
+
+        // Apply search filter if search term exists
+        if (!empty($search)) {
+            $searchTerm = '%' . $search . '%';
+
+            // Search in both name and company fields using OR condition
+            // Both fields have indexes (idx_name, idx_company) for optimized queries
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', $searchTerm)
+                  ->orWhere('company', 'LIKE', $searchTerm);
+            });
+        }
 
         return $query
             ->orderBy('name')

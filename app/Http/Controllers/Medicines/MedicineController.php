@@ -20,19 +20,25 @@ class MedicineController extends Controller
 
     public function index(Request $request)
     {
+        // Sanitize and normalize search input
+        $search = trim($request->input('search', ''));
+
         $cacheKey = 'medicines:'.md5(json_encode([
-            'search' => $request->search,
-            'page' => $request->page,
+            'search' => $search,
+            'page' => $request->input('page', 1),
         ]));
 
-        $medicines = Cache::remember($cacheKey, now()->addSeconds(60), function () use ($request) {
-            return $this->medicineService->getMedicines($request);
-        });
+        // Cache can be enabled for better performance if needed
+        // $medicines = Cache::remember($cacheKey, now()->addSeconds(60), function () use ($request) {
+        //     return $this->medicineService->getMedicines($request);
+        // });
+
+        $medicines = $this->medicineService->getMedicines($request);
 
         return Inertia::render('medicines/medicines', [
             'medicines' => Inertia::scroll(fn () => $medicines),
             'filters' => [
-                'search' => $request->input('search', ''),
+                'search' => $search,
             ],
         ]);
     }
