@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Interfaces\CategoryInterface;
+use App\Interfaces\ItemInterface;
 use App\Interfaces\MedicineInterface;
 use App\Interfaces\PharmacyInterface;
 use App\Interfaces\PharmacySupplierInterface;
 use App\Interfaces\SupplierInterface;
 use App\Interfaces\UserInterface;
 use App\Repositories\CategoryRepository;
+use App\Repositories\ItemRepository;
 use App\Repositories\MedicineRepository;
 use App\Repositories\PharmacyRepository;
 use App\Repositories\PharmacySupplierRepository;
@@ -28,6 +30,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SupplierInterface::class, SupplierRepository::class);
         $this->app->bind(PharmacySupplierInterface::class, PharmacySupplierRepository::class);
         $this->app->bind(MedicineInterface::class, MedicineRepository::class);
+        $this->app->bind(ItemInterface::class, ItemRepository::class);
     }
 
     /**

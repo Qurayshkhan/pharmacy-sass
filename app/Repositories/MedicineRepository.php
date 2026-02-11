@@ -14,10 +14,10 @@ class MedicineRepository implements MedicineInterface
             ->select('id', 'name', 'company', 'pack_size', 'sale_price', 'mrp');
         $search = trim($request->input('search', ''));
         if (! empty($search)) {
-            if (strlen($search) < 3) {
+            if (strlen($search) <= 3) {
                 $query->where('name', 'LIKE', "%{$search}%");
             } else {
-                $query->whereFullText(['name', 'company'], $search);
+                $query->whereFullText(['name', 'company'], $search, ['mood' => 'boolean']);
             }
         }
 
