@@ -19,7 +19,7 @@ return new class extends Migration
             $table->longText('branch')->nullable();
             $table->longText('address')->nullable();
             $table->boolean('is_active')->default(0);
-            $table->dateTime('link_expiration_date')->default(0);
+            $table->dateTime('link_expiration_date')->nullable();
             $table->timestamps();
         });
     }

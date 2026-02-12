@@ -16,7 +16,7 @@ class User extends Authenticatable
 
     const TYPE_ADMIN = 1;
 
-    const TYPE_PHARMACY = 2;
+    const TYPE_STORE = 2;
 
     const TYPE_STAFF_MEMBER = 3;
 
@@ -32,6 +32,7 @@ class User extends Authenticatable
         'email',
         'password',
         'uuid',
+        'type',
     ];
 
     /**
@@ -71,5 +72,10 @@ class User extends Authenticatable
     public function suppliers()
     {
         return $this->hasMany(MySupplier::class, 'user_id', 'id');
+    }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class);
     }
 }

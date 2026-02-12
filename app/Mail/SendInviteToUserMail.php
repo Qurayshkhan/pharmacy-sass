@@ -44,7 +44,7 @@ class SendInviteToUserMail extends Mailable implements ShouldQueue
             markdown: 'emails.sendInviteToUserMail',
             with: [
                 'user' => $this->user,
-                'inviteUrl' => route('pharmacies.edit', ['uuid' => $this->user->uuid]),
+                'inviteUrl' => route('stores.edit', ['uuid' => $this->user->uuid]),
             ],
         );
     }
