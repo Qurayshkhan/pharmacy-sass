@@ -51,5 +51,6 @@ Route::group(['prefix' => 'medicines', 'middleware' => ['auth']], function () {
     Route::get('/search', [MedicineController::class, 'search'])->name('medicines.search');
 });
 
+require __DIR__.'/stores.php';
 require __DIR__.'/pharmacy.php';
 require __DIR__.'/settings.php';

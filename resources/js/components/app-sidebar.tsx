@@ -17,8 +17,10 @@ import { index as categories } from '@/routes/categories';
 import { index as medicines } from '@/routes/medicines';
 import { index as mySuppliersIndex } from '@/routes/my-suppliers';
 import { index as pharmaciesIndex } from '@/routes/pharmacies';
+import { index as storesIndex } from '@/routes/stores';
 import { index as suppliersIndex } from '@/routes/suppliers';
 import type { NavItem } from '@/types';
+
 import AppLogo from './app-logo';
 
 
@@ -34,6 +36,11 @@ export function AppSidebar() {
         {
             title: 'Pharmacies',
             href: pharmaciesIndex(),
+            icon: Store,
+        },
+        {
+            title: 'Stores',
+            href: storesIndex(),
             icon: Store,
         },
         {
