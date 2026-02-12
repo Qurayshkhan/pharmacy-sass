@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PharmacySupplier extends Model
+class MySupplier extends Model
 {
     use HasFactory;
 
+    protected $table = 'my_suppliers';
+
     protected $fillable = [
-        'pharmacy_id',
+        'user_id',
         'supplier_name',
         'company_name',
         'contact',
@@ -18,10 +20,10 @@ class PharmacySupplier extends Model
     ];
 
     /**
-     * Get the pharmacy that owns this supplier.
+     * Get the user that owns this supplier.
      */
-    public function pharmacy()
+    public function user()
     {
-        return $this->belongsTo(Pharmacy::class, 'pharmacy_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

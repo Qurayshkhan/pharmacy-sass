@@ -1,6 +1,6 @@
-export interface PharmacySupplier {
+export interface MySupplier {
     id: number;
-    pharmacy_id: number;
+    user_id: number;
     supplier_name: string;
     company_name?: string | null;
     contact?: string | null;

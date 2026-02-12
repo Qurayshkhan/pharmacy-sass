@@ -41,28 +41,28 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import AppLayout from '@/layouts/app-layout'
-import { index, store, update, destroy, copyFromGlobal } from '@/routes/pharmacy-suppliers';
+import { index, store, update, destroy, copyFromGlobal } from '@/routes/my-suppliers';
 import type { BreadcrumbItem } from '@/types';
 import type { Pagination as PaginationType } from '@/types/pagination';
-import type { PharmacySupplier, GlobalSupplier } from './types';
+import type { MySupplier, GlobalSupplier } from './types';
 
-interface PharmacySupplierProps {
-    pharmacySuppliers?: PaginationType<PharmacySupplier>;
-    pharmacySupplier?: PharmacySupplier;
+interface MySupplierProps {
+    mySuppliers?: PaginationType<MySupplier>;
+    mySupplier?: MySupplier;
     globalSuppliers?: GlobalSupplier[];
 }
 
-const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySupplier, globalSuppliers = [] }: PharmacySupplierProps) => {
+const MySuppliers = ({ mySuppliers, mySupplier: editMySupplier, globalSuppliers = [] }: MySupplierProps) => {
     const [showModal, setShowModal] = useState(false);
     const [showCopyModal, setShowCopyModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
-    const [editingSupplier, setEditingSupplier] = useState<PharmacySupplier | null>(null);
-    const [deletingSupplier, setDeletingSupplier] = useState<PharmacySupplier | null>(null);
+    const [editingSupplier, setEditingSupplier] = useState<MySupplier | null>(null);
+    const [deletingSupplier, setDeletingSupplier] = useState<MySupplier | null>(null);
     const [openConfirmation, setOpenConfirmation] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Pharmacy Suppliers',
+            title: 'My Suppliers',
             href: index().url,
         },
     ];
@@ -83,22 +83,22 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
     });
 
     useEffect(() => {
-        if (editPharmacySupplier && !showModal) {
+        if (editMySupplier && !showModal) {
             form.setData({
-                supplier_name: editPharmacySupplier.supplier_name || '',
-                company_name: editPharmacySupplier.company_name || '',
-                contact: editPharmacySupplier.contact || '',
-                address: editPharmacySupplier.address || '',
+                supplier_name: editMySupplier.supplier_name || '',
+                company_name: editMySupplier.company_name || '',
+                contact: editMySupplier.contact || '',
+                address: editMySupplier.address || '',
             });
 
             setTimeout(() => {
                 setIsEdit(true);
-                setEditingSupplier(editPharmacySupplier);
+                setEditingSupplier(editMySupplier);
                 setShowModal(true);
             }, 0);
         }
 
-    }, [editPharmacySupplier, form, showModal]);
+    }, [editMySupplier, form, showModal]);
 
     const handleOpenModal = () => {
         setIsEdit(false);
@@ -127,7 +127,7 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
         copyForm.clearErrors();
     };
 
-    const handleEdit = (supplier: PharmacySupplier) => {
+    const handleEdit = (supplier: MySupplier) => {
         setIsEdit(true);
         setEditingSupplier(supplier);
         form.setData({
@@ -185,12 +185,12 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
         });
     };
 
-    const handleDelete = (supplier: PharmacySupplier) => {
+    const handleDelete = (supplier: MySupplier) => {
         setDeletingSupplier(supplier);
         setOpenConfirmation(true);
     };
 
-    if (!pharmacySuppliers) {
+    if (!mySuppliers) {
         return (
             <AppLayout breadcrumbs={breadcrumbs}>
                 <div className="space-y-6 p-6">
@@ -202,8 +202,8 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title='Pharmacy Suppliers' />
-            <Deferred data={['pharmacySuppliers', 'globalSuppliers']} fallback={<FullPageSpinner />}>
+            <Head title='My Suppliers' />
+            <Deferred data={['mySuppliers', 'globalSuppliers']} fallback={<FullPageSpinner />}>
                 <div className="space-y-6 p-6">
                     <div className="flex items-center justify-end gap-2">
                         {globalSuppliers && globalSuppliers.length > 0 && (
@@ -232,14 +232,14 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {!pharmacySuppliers?.data || pharmacySuppliers.data.length === 0 ? (
+                                        {!mySuppliers?.data || mySuppliers.data.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={5} className="text-center">
                                                     No suppliers found
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            pharmacySuppliers.data.map((item) => (
+                                            mySuppliers.data.map((item) => (
                                                 <TableRow key={item.id}>
                                                     <TableCell>{item.supplier_name ?? 'N/A'}</TableCell>
                                                     <TableCell>{item.company_name ?? 'N/A'}</TableCell>
@@ -278,13 +278,13 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
                                 </Table>
                             </div>
 
-                            {pharmacySuppliers.links && pharmacySuppliers.links.length > 0 && (
+                            {mySuppliers.links && mySuppliers.links.length > 0 && (
                                 <Pagination
-                                    links={pharmacySuppliers.links}
-                                    from={pharmacySuppliers.from}
-                                    to={pharmacySuppliers.to}
-                                    total={pharmacySuppliers.total}
-                                    infoLabel={`Showing ${pharmacySuppliers.from || 0} to ${pharmacySuppliers.to || 0} of ${pharmacySuppliers.total} suppliers`}
+                                    links={mySuppliers.links}
+                                    from={mySuppliers.from}
+                                    to={mySuppliers.to}
+                                    total={mySuppliers.total}
+                                    infoLabel={`Showing ${mySuppliers.from || 0} to ${mySuppliers.to || 0} of ${mySuppliers.total} suppliers`}
                                     className="mt-6"
                                 />
                             )}
@@ -547,4 +547,4 @@ const PharmacySuppliers = ({ pharmacySuppliers, pharmacySupplier: editPharmacySu
     );
 };
 
-export default PharmacySuppliers;
+export default MySuppliers;

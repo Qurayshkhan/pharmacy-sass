@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\Medicines\MedicineController;
-use App\Http\Controllers\PharmacySuppliers\PharmacySupplierController;
+use App\Http\Controllers\MySuppliers\MySupplierController;
 use App\Http\Controllers\Suppliers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,14 +36,14 @@ Route::group(['prefix' => 'suppliers', 'middleware' => 'auth'], function () {
     Route::get('/all/select', [SupplierController::class, 'getAllForSelect'])->name('suppliers.getAllForSelect');
 });
 
-// Pharmacy Suppliers
-Route::group(['prefix' => 'pharmacy-suppliers', 'middleware' => 'auth'], function () {
-    Route::get('/', [PharmacySupplierController::class, 'index'])->name('pharmacy-suppliers.index');
-    Route::post('/store', [PharmacySupplierController::class, 'store'])->name('pharmacy-suppliers.store');
-    Route::post('/copy-from-global', [PharmacySupplierController::class, 'copyFromGlobal'])->name('pharmacy-suppliers.copyFromGlobal');
-    Route::get('/{id}/edit', [PharmacySupplierController::class, 'edit'])->name('pharmacy-suppliers.edit');
-    Route::put('/{id}', [PharmacySupplierController::class, 'update'])->name('pharmacy-suppliers.update');
-    Route::delete('/{id}', [PharmacySupplierController::class, 'destroy'])->name('pharmacy-suppliers.destroy');
+// My Suppliers
+Route::group(['prefix' => 'my-suppliers', 'middleware' => 'auth'], function () {
+    Route::get('/', [MySupplierController::class, 'index'])->name('my-suppliers.index');
+    Route::post('/store', [MySupplierController::class, 'store'])->name('my-suppliers.store');
+    Route::post('/copy-from-global', [MySupplierController::class, 'copyFromGlobal'])->name('my-suppliers.copyFromGlobal');
+    Route::get('/{id}/edit', [MySupplierController::class, 'edit'])->name('my-suppliers.edit');
+    Route::put('/{id}', [MySupplierController::class, 'update'])->name('my-suppliers.update');
+    Route::delete('/{id}', [MySupplierController::class, 'destroy'])->name('my-suppliers.destroy');
 });
 
 Route::group(['prefix' => 'medicines', 'middleware' => ['auth']], function () {

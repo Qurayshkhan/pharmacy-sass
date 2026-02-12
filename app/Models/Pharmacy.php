@@ -22,11 +22,4 @@ class Pharmacy extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    /**
-     * Get the suppliers for this pharmacy.
-     */
-    public function suppliers()
-    {
-        return $this->hasMany(PharmacySupplier::class, 'pharmacy_id', 'id');
-    }
 }

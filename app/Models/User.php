@@ -64,4 +64,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Pharmacy::class, 'user_id', 'id');
     }
+
+    /**
+     * Get the suppliers for this user.
+     */
+    public function suppliers()
+    {
+        return $this->hasMany(MySupplier::class, 'user_id', 'id');
+    }
 }

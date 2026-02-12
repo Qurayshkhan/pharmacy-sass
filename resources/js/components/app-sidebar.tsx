@@ -15,20 +15,15 @@ import {
 import { dashboard } from '@/routes';
 import { index as categories } from '@/routes/categories';
 import { index as medicines } from '@/routes/medicines';
+import { index as mySuppliersIndex } from '@/routes/my-suppliers';
 import { index as pharmaciesIndex } from '@/routes/pharmacies';
-import { index as pharmacySuppliersIndex } from '@/routes/pharmacy-suppliers';
 import { index as suppliersIndex } from '@/routes/suppliers';
 import type { NavItem } from '@/types';
-import type { SharedData } from '@/types';
-import type { AuthUser } from '@/types/page-props';
 import AppLogo from './app-logo';
 
 
 
 export function AppSidebar() {
-    const { auth } = usePage<SharedData>().props;
-    const user = auth.user as unknown as AuthUser | null;
-    const userType = user?.type;
 
     const mainNavItems: NavItem[] = [
         {
@@ -47,30 +42,21 @@ export function AppSidebar() {
             icon: Box,
         },
         {
+            title: 'Global suppliers',
+            href: suppliersIndex(),
+            icon: Package,
+        },
+        {
             title: 'Global medicines',
             href: medicines(),
             icon: ClipboardPlus,
         },
-    ];
-
-    // Add Global Suppliers for Admin only
-    if (userType === 1) { // User::TYPE_ADMIN
-        mainNavItems.push({
-            title: 'Global suppliers',
-            href: suppliersIndex(),
-            icon: Package,
-        });
-    }
-
-    // Add Pharmacy Suppliers for Pharmacy users
-    if (userType === 2) { // User::TYPE_PHARMACY
-        mainNavItems.push({
+        {
             title: 'My Suppliers',
-            href: pharmacySuppliersIndex(),
+            href: mySuppliersIndex(),
             icon: Building2,
-        });
-    }
-
+        },
+    ];
 
 
     return (

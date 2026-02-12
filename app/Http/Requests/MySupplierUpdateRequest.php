@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PharmacySupplierCopyRequest extends FormRequest
+class MySupplierUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,6 @@ class PharmacySupplierCopyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'global_supplier_id' => 'required|integer|exists:suppliers,id',
             'supplier_name' => 'required|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'contact' => 'nullable|string|max:255',
