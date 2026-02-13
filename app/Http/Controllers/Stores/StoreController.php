@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Stores\StoreRequest;
 use App\Http\Requests\Stores\UpdateStoreRequest;
 use App\Models\User;
+use App\Repositories\StoreRepository;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,14 +17,19 @@ class StoreController extends Controller
 {
     protected $userService;
 
-    public function __construct(UserService $userService)
+    protected $storeRepository;
+
+    public function __construct(UserService $userService, StoreRepository $storeRepository)
     {
         $this->userService = $userService;
+        $this->storeRepository = $storeRepository;
     }
 
     public function index()
     {
-        return Inertia::render('stores/stores');
+        $stores = $this->storeRepository->getStores();
+
+        return Inertia::render('stores/stores', ['stores' => Inertia::defer(fn () => $stores)]);
     }
 
     public function store(StoreRequest $request)

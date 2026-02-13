@@ -17,7 +17,7 @@ export type Pagination<T> = {
     from: number | null;
     to: number | null;
     total: number;
-    links?: PaginationLink[];
+    links: PaginationLink[];
 }
 
 

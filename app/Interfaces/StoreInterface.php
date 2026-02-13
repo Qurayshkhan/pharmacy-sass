@@ -2,4 +2,7 @@
 
 namespace App\Interfaces;
 
-interface StoreInterface {}
+interface StoreInterface
+{
+    public function getStores();
+}

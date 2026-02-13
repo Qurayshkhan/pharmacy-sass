@@ -1,5 +1,5 @@
-import { Head, useForm } from '@inertiajs/react'
-import { Plus, MoreHorizontal } from 'lucide-react'
+import { Deferred, Head, useForm } from '@inertiajs/react'
+import { Edit, Plus, Trash } from 'lucide-react'
 import React, { useState } from 'react'
 import InputError from '@/components/input-error'
 import Label from '@/components/label'
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import Pagination from '@/components/ui/pagination'
 import { Spinner } from '@/components/ui/spinner'
 import {
     Table,
@@ -16,10 +17,20 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import AppLayout from '@/layouts/app-layout'
 import { store, store as StoreIndex } from '@/routes/stores'
 import type { BreadcrumbItem } from '@/types'
-const Stores = () => {
+import type { Pagination as PaginationType } from '@/types/pagination'
+import type { Stores as StoresType } from './types'
+
+
+interface storeProps {
+    stores: PaginationType<StoresType>,
+}
+
+const Stores = ({ stores }: storeProps) => {
+    console.log("🚀 ~ Stores ~ stores:", stores)
     const [isOpen, setIsOpen] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -28,13 +39,14 @@ const Stores = () => {
         },
     ]
 
-    const handleOpen = () => {
-        setIsOpen(true);
-    }
 
     const form = useForm({
         email: "",
     });
+    const handleOpen = () => {
+        setIsOpen(true);
+        form.clearErrors();
+    }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -65,44 +77,79 @@ const Stores = () => {
                                 <TableHead className='border text-center'>Name</TableHead>
                                 <TableHead className='border text-center'>Email</TableHead>
                                 <TableHead className='border text-center'>Contact</TableHead>
-                                <TableHead className='border text-center'>Address</TableHead>
+                                <TableHead className='border text-center'>Branch</TableHead>
                                 <TableHead className='border text-center'>Status</TableHead>
-                                <TableHead className="border text-center">
-                                    Action
-                                </TableHead>
+                                <TableHead className='border text-center'>Action</TableHead>
+
                             </TableRow>
                         </TableHeader>
 
                         <TableBody>
-                            <TableRow>
-                                <TableCell className="font-medium">
-                                    Hassan Pharmacy
-                                </TableCell>
-                                <TableCell>
-                                    hassan@email.com
-                                </TableCell>
-                                <TableCell>
-                                    +92 300 1234567
-                                </TableCell>
-                                <TableCell>
-                                    LIC-102938dasas
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="default">
-                                        Active
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                    >
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
+                            <Deferred data={["stores"]} fallback={<Spinner />}>
+                                {stores && stores.data.length > 0 ?
+                                    stores?.data?.map((item) => {
+                                        return <TableRow key={item.id}>
+                                            <TableCell className='border'>
+                                                {item?.user?.name ?? 'N/A'}
+                                            </TableCell>
+                                            <TableCell className='border'>
+                                                {item?.user.email ?? 'N/A'}
+                                            </TableCell>
+                                            <TableCell className='border'>
+                                                {item?.contact ?? 'N/A'}
+                                            </TableCell>
+                                            <TableCell>
+                                                {item?.branch ?? 'N/A'}
+                                            </TableCell>
+                                            <TableCell className='border'>
+                                                <Badge variant={item?.is_active ? "default" : "secondary"}>
+                                                    {item?.is_active ? 'Active' : 'Inactive'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className='flex gap-2 justify-center'>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant={"outline"} size={"icon"}>
+                                                            <Edit />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        Edit store
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant={"destructive"} size={"icon"}>
+                                                            <Trash />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        Dele store
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+
+                                        </TableRow>
+                                    })
+                                    : <TableRow>
+                                        <TableCell colSpan={3}>No record found.</TableCell>
+                                    </TableRow>}
+                            </Deferred>
                         </TableBody>
                     </Table>
+                    <div className='p-2'>
+                        {stores?.links?.length > 0 && (
+                            <Pagination
+                                links={stores.links}
+                                from={stores.from}
+                                to={stores.to}
+                                total={stores.total}
+                                infoLabel={`Showing ${stores.from || 0} to ${stores.to || 0} of ${stores.total} Stores`}
+                                className="mt-6"
+                            />
+                        )}
+
+                    </div>
                 </div>
             </div>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -134,7 +181,7 @@ const Stores = () => {
                     </form>
                 </DialogContent>
             </Dialog>
-        </AppLayout>
+        </AppLayout >
 
     )
 }
