@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { Box, LayoutGrid, Store, Package, Building2, ClipboardPlus } from 'lucide-react';
 // import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -16,7 +16,6 @@ import { dashboard } from '@/routes';
 import { index as categories } from '@/routes/categories';
 import { index as medicines } from '@/routes/medicines';
 import { index as mySuppliersIndex } from '@/routes/my-suppliers';
-import { index as pharmaciesIndex } from '@/routes/pharmacies';
 import { index as storesIndex } from '@/routes/stores';
 import { index as suppliersIndex } from '@/routes/suppliers';
 import type { NavItem } from '@/types';
@@ -32,11 +31,6 @@ export function AppSidebar() {
             title: 'Dashboard',
             href: dashboard(),
             icon: LayoutGrid,
-        },
-        {
-            title: 'Pharmacies',
-            href: pharmaciesIndex(),
-            icon: Store,
         },
         {
             title: 'Stores',

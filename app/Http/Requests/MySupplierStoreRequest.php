@@ -16,7 +16,7 @@ class MySupplierStoreRequest extends FormRequest
             return false;
         }
 
-        return in_array($user->type, [\App\Models\User::TYPE_ADMIN, \App\Models\User::TYPE_PHARMACY]);
+        return in_array($user->type, [\App\Models\User::TYPE_ADMIN, \App\Models\User::TYPE_STORE]);
     }
 
     /**

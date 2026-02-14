@@ -21,18 +21,15 @@ class UpdateStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        dd($this->all());
 
         return [
+            'id' => 'sometimes',
+            'user_id' => 'sometimes',
             'name' => 'required|string|max:255',
-            'is_update_pharmacy' => 'nullable',
-            'email' => 'nullable|required_unless:is_update_pharmacy,true|email|unique:users,email,'.$this->uuid.',uuid',
-            'password' => 'nullable|required_unless:is_update_pharmacy,true|string|min:8|confirmed',
             'address' => 'required|string|max:255',
             'contact' => 'required|string',
             'branch' => 'nullable',
-            'uuid' => 'nullable',
-            'status' => 'nullable',
+            'is_active' => 'required',
         ];
     }
 }

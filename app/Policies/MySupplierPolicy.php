@@ -12,7 +12,7 @@ class MySupplierPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->type, [User::TYPE_ADMIN, User::TYPE_PHARMACY]);
+        return in_array($user->type, [User::TYPE_ADMIN, User::TYPE_STORE]);
     }
 
     /**
@@ -33,7 +33,7 @@ class MySupplierPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->type, [User::TYPE_ADMIN, User::TYPE_PHARMACY]);
+        return in_array($user->type, [User::TYPE_ADMIN, User::TYPE_STORE]);
     }
 
     /**

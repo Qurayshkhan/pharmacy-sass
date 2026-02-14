@@ -10,7 +10,13 @@ interface UserInterface
 
     public function getUserByUuid(string $uuid): ?User;
 
-    public function updateUser(array $data): bool;
+    public function updateUserByUuid(string $uuid, array $data): bool;
 
     public function getUserByEmail(string $email): ?User;
+
+    public function getUserById(int $id): ?User;
+
+    public function updateUserById($userId, array $data): bool;
+
+    public function destroyUserByUuid($uuid): bool|int|null;
 }

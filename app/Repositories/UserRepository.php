@@ -17,13 +17,28 @@ class UserRepository implements UserInterface
         return User::select('id', 'name', 'email', 'uuid')->where('uuid', $uuid)->first();
     }
 
-    public function updateUser(array $data): bool
+    public function updateUserByUuid(string $uuid, array $data): bool
     {
-        return User::where('uuid', $data['uuid'])->update($data);
+        return User::where('uuid', $uuid)->update($data);
     }
 
     public function getUserByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
+    }
+
+    public function getUserById(int $id): User
+    {
+        return User::findOrFail($id);
+    }
+
+    public function updateUserById($userId, array $data): bool
+    {
+        return User::where('id', $userId)->update($data);
+    }
+
+    public function destroyUserByUuid($uuid): bool|int|null
+    {
+        return User::where('uuid', $uuid)->delete();
     }
 }

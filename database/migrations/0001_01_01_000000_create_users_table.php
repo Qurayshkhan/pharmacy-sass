@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -21,7 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->tinyInteger('status')->default(1)->index('idx_status')->comment('1=active,0=inactive');
-            $table->tinyInteger('type')->default(2)->index('idx_type')->comment('1=admin,2=pharmacy,3=staff_member');
+            $table->tinyInteger('type')->default(2)->index('idx_type')->comment('1=admin,2=stores,3=staff_member');
             $table->rememberToken();
             $table->timestamps();
         });

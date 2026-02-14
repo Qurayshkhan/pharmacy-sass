@@ -52,5 +52,4 @@ Route::group(['prefix' => 'medicines', 'middleware' => ['auth']], function () {
 });
 
 require __DIR__.'/stores.php';
-require __DIR__.'/pharmacy.php';
 require __DIR__.'/settings.php';

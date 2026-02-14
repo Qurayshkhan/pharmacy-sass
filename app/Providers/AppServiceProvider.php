@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Pharmacy;
 use App\Models\Store;
 use App\Models\User;
-use App\Observers\PharmacyObserver;
 use App\Observers\StoreObserver;
 use App\Observers\UserObserver;
 use Carbon\CarbonImmutable;
@@ -31,7 +29,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         User::observe(UserObserver::class);
-        Pharmacy::observe(PharmacyObserver::class);
         Store::observe(StoreObserver::class);
     }
 

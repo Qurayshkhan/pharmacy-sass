@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout'
-import { update } from '@/routes/stores'
+import { register } from '@/routes/stores'
 import type { User } from '@/types';
 
 interface UserProps {
@@ -13,6 +13,7 @@ interface UserProps {
 }
 
 const Register = ({ user }: UserProps) => {
+    console.log("🚀 ~ Register ~ user:", user)
     const email = user?.email ?? '';
 
 
@@ -24,14 +25,15 @@ const Register = ({ user }: UserProps) => {
             >
                 <Head title="Register" />
                 <Form
-                    {...update.form()}
+                    {...register.form()}
                     resetOnSuccess={['password', 'password_confirmation']}
                     disableWhileProcessing
                     className="flex flex-col gap-6"
                 >
                     {({ processing, errors }) => (
                         <>
-                            <input type="hidden" name='uuid' value={String(user.uuid)} />
+                            <input type="hidden" name='user_id' value={String(user.id)} />
+                            <input type="hidden" name='id' value={String(user.store.id)} />
                             <div className="grid gap-6">
                                 <div className="grid gap-2">
                                     <Label htmlFor="name" required>
@@ -44,7 +46,7 @@ const Register = ({ user }: UserProps) => {
                                         tabIndex={1}
                                         autoComplete="name"
                                         name="name"
-                                        placeholder="Name e.g (Pharmacy, Bakery, General store"
+                                        placeholder="Name e.g (Pharmacy, Bakery, General store)"
                                     />
                                     <InputError
                                         message={errors.name}

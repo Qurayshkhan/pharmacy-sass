@@ -26,9 +26,16 @@ class UserService
         return $this->userRepository->create($data);
     }
 
-    public function sendInvite($user)
+    public function inviteUser(array $data): mixed
     {
-        Mail::to($user->email)->queue(new SendInviteToUserMail($user));
+        $user = $this->createUser($data);
+
+        return $this->sendInvite($user);
+    }
+
+    public function sendInvite($user): mixed
+    {
+        return Mail::to($user->email)->queue(new SendInviteToUserMail($user));
     }
 
     public function getUserByUuid(string $uuid): ?User
@@ -44,11 +51,16 @@ class UserService
             $data['password'] = Hash::make($data['password']);
         }
 
-        return $this->userRepository->updateUser($data);
+        return $this->userRepository->updateUserByUuid($data['uuid'], $data);
     }
 
     public function deletePharmacyUser($uuid): ?bool
     {
         return $this->getUserByUuid($uuid)->delete();
+    }
+
+    public function deleteUser($uuid)
+    {
+        return $this->userRepository->destroyUserByUuid($uuid);
     }
 }

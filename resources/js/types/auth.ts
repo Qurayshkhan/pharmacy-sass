@@ -8,6 +8,14 @@ export type User = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
+    store: {
+        id: number,
+        address: string,
+        branch: string,
+        contact: string,
+        is_active: string,
+        user_id: string,
+    }
 };
 
 export type Auth = {

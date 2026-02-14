@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Stores;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Stores\RegisterStoreRequest;
 use App\Http\Requests\Stores\StoreRequest;
 use App\Http\Requests\Stores\UpdateStoreRequest;
 use App\Models\User;
-use App\Repositories\StoreRepository;
+use App\Services\StoreService;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,17 +18,17 @@ class StoreController extends Controller
 {
     protected $userService;
 
-    protected $storeRepository;
+    protected $storeService;
 
-    public function __construct(UserService $userService, StoreRepository $storeRepository)
+    public function __construct(UserService $userService, StoreService $storeService)
     {
         $this->userService = $userService;
-        $this->storeRepository = $storeRepository;
+        $this->storeService = $storeService;
     }
 
     public function index()
     {
-        $stores = $this->storeRepository->getStores();
+        $stores = $this->storeService->getStores();
 
         return Inertia::render('stores/stores', ['stores' => Inertia::defer(fn () => $stores)]);
     }
@@ -36,12 +37,10 @@ class StoreController extends Controller
     {
         try {
             DB::beginTransaction();
-            $user = $this->userService->createUser([
+            $this->userService->inviteUser([
                 'email' => $request->input('email'),
                 'type' => User::TYPE_STORE,
             ]);
-
-            $this->userService->sendInvite($user);
             DB::commit();
 
             return Redirect::back()->with('success', 'Send invite to store successfully.');
@@ -69,14 +68,48 @@ class StoreController extends Controller
 
     }
 
-    public function update(UpdateStoreRequest $request)
+    public function registerStore(RegisterStoreRequest $request)
     {
-        dd($request->all());
+        try {
+            DB::beginTransaction();
+            $this->storeService->registerStore($request->all());
+            DB::commit();
+
+            return Redirect::route('login')->with('success', 'Your account registered successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return Redirect::back()->with('error', $e->getMessage());
+        }
     }
 
-    public function create() {}
+    public function update(UpdateStoreRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            $this->storeService->updateStore($request->all());
+            DB::commit();
 
-    public function adminEdit() {}
+            return Redirect::back()->with('success', 'Store updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-    public function destroyed() {}
+            return Redirect::back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy($uuid)
+    {
+        try {
+            DB::beginTransaction();
+            $this->userService->deleteUser($uuid);
+            DB::commit();
+
+            return Redirect::back()->with('success', 'Store deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return Redirect::back()->with('error', $e->getMessage());
+        }
+    }
 }

@@ -61,11 +61,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function pharmacy()
-    {
-        return $this->hasOne(Pharmacy::class, 'user_id', 'id');
-    }
-
     /**
      * Get the suppliers for this user.
      */

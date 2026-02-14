@@ -46,7 +46,7 @@ class MySupplierController extends Controller
             }),
             'globalSuppliers' => Inertia::defer(function () {
                 // Only show global suppliers for pharmacy users
-                if (auth()->user()->type === User::TYPE_PHARMACY) {
+                if (auth()->user()->type === User::TYPE_STORE) {
                     return $this->supplierService->getAllSuppliersForSelect();
                 }
 
@@ -64,7 +64,7 @@ class MySupplierController extends Controller
             $userId = null;
 
             // Get user ID based on user type
-            if ($user->type === User::TYPE_PHARMACY) {
+            if ($user->type === User::TYPE_STORE) {
                 $userId = $user->id;
             } elseif ($user->type === User::TYPE_ADMIN) {
                 // Admin can specify user_id in request
@@ -108,7 +108,7 @@ class MySupplierController extends Controller
         }
 
         // Check authorization
-        if ($user->type === User::TYPE_PHARMACY) {
+        if ($user->type === User::TYPE_STORE) {
             if ($mySupplier->user_id !== $user->id) {
                 abort(403);
             }
@@ -130,7 +130,7 @@ class MySupplierController extends Controller
             }),
             'mySupplier' => $mySupplier,
             'globalSuppliers' => Inertia::defer(function () {
-                if (auth()->user()->type === User::TYPE_PHARMACY) {
+                if (auth()->user()->type === User::TYPE_STORE) {
                     return $this->supplierService->getAllSuppliersForSelect();
                 }
 
@@ -151,7 +151,7 @@ class MySupplierController extends Controller
             }
 
             // Check authorization
-            if ($user->type === User::TYPE_PHARMACY) {
+            if ($user->type === User::TYPE_STORE) {
                 if ($mySupplier->user_id !== $user->id) {
                     abort(403);
                 }
@@ -179,7 +179,7 @@ class MySupplierController extends Controller
             }
 
             // Check authorization
-            if ($user->type === User::TYPE_PHARMACY) {
+            if ($user->type === User::TYPE_STORE) {
                 if ($mySupplier->user_id !== $user->id) {
                     abort(403);
                 }
@@ -211,7 +211,7 @@ class MySupplierController extends Controller
             }
 
             // Get user ID based on user type
-            if ($user->type === User::TYPE_PHARMACY) {
+            if ($user->type === User::TYPE_STORE) {
                 $userId = $user->id;
             } elseif ($user->type === User::TYPE_ADMIN) {
                 $userId = $request->input('user_id');
